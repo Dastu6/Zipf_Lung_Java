@@ -8,11 +8,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-//t
-//import com.aspose.imaging.*;
-
-//MASTERCLASS
-
+import com.aspose.imaging.Image;
+import com.aspose.imaging.fileformats.dicom.DicomImage;
+import com.aspose.imaging.imageoptions.JpegOptions;
 
 /**
  * JavaFX App
@@ -36,10 +34,18 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
+    
+    public static void test() {
+    	System.out.println("test");
+    	DicomImage dicomImage;
+    	//dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
+    	//JpegOptions jpegOptions = new JpegOptions();
+    	//dicomImage.save();
+    }
 
     public static void main(String[] args) {
+    	test();
         launch();
-        	
     }
 
 }
