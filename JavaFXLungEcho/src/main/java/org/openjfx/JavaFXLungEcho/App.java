@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import com.aspose.imaging.*;
+import com.aspose.imaging.Image;
 
 /**
  * JavaFX App
@@ -34,6 +34,15 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+    	DicomImage dicomImage = (DicomImage) Image.load("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\test.dcm");
+
+    	// Définir la page active à convertir en JPEG
+    	dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
+
+    	JpegOptions jpegOptions = new JpegOptions();
+
+    	// Enregistrer au format JPEG
+    	dicomImage.save("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\return.jpg", jpegOptions);
         launch();
 
     }
