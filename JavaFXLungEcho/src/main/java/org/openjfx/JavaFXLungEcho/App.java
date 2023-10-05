@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 import com.aspose.imaging.Image;
+import com.aspose.imaging.fileformats.dicom.DicomImage;
+import com.aspose.imaging.imageoptions.JpegOptions;
 
 /**
  * JavaFX App
@@ -16,7 +18,7 @@ import com.aspose.imaging.Image;
 public class App extends Application {
 
     private static Scene scene;
-
+    
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 640, 480);
@@ -32,19 +34,18 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
+    
+    public static void test() {
+    	System.out.println("test");
+    	DicomImage dicomImage = (DicomImage) Image.load("images/2019010A.dcm");
+    	//dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
+    	//JpegOptions jpegOptions = new JpegOptions();
+    	//dicomImage.save();
+    }
 
     public static void main(String[] args) {
-    	DicomImage dicomImage = (DicomImage) Image.load("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\test.dcm");
-
-    	// Définir la page active à convertir en JPEG
-    	dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
-
-    	JpegOptions jpegOptions = new JpegOptions();
-
-    	// Enregistrer au format JPEG
-    	dicomImage.save("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\return.jpg", jpegOptions);
+    	test();
         launch();
-
     }
 
 }
