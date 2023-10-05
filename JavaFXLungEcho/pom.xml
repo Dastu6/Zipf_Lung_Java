@@ -16,22 +16,35 @@
 		    <name>Aspose Java API</name>
 		    <url>https://repository.aspose.com/repo/</url>
 		</repository>
+		<repository>
+		    <id>www.dcm4che.org</id>
+		    <name>dcm4che Repository</name>
+		    <url>http://www.dcm4che.org/maven2</url>
+		</repository>
 	</repositories>
     
     <dependencies>
-        <dependency>
-		    <groupId>com.aspose</groupId>
-		    <artifactId>aspose-imaging</artifactId>
-		    <version>23.9</version>
-		    <classifier>jdk16</classifier>
+		<dependency>
+			<groupId>com.aspose</groupId>
+			<artifactId>aspose-imaging</artifactId>
+			<version>20.10</version>
+			<classifier>jdk16</classifier>
 		</dependency>
-
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>15.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>15.0.1</version>
         </dependency>
-       	
+       	<dependency> 
+		    <groupId>dcm4che</groupId>
+		    <artifactId>dcm4che-core</artifactId>
+		    <version>2.0.29</version>
+		</dependency>
     </dependencies>
     <build>
         <plugins>
