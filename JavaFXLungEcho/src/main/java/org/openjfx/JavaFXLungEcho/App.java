@@ -37,7 +37,7 @@ public class App extends Application {
     
     public static void test() {
     	System.out.println("test");
-    	DicomImage dicomImage;
+    	DicomImage dicomImage = (DicomImage) Image.load("images/2019010A.dcm");
     	//dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
     	//JpegOptions jpegOptions = new JpegOptions();
     	//dicomImage.save();
