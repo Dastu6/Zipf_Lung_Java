@@ -6,7 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 import com.aspose.imaging.Image;
 import com.aspose.imaging.fileformats.dicom.DicomImage;
@@ -37,7 +42,17 @@ public class App extends Application {
     
     public static void test() {
     	System.out.println("test");
-    	DicomImage dicomImage = (DicomImage) Image.load("images/2019010A.dcm");
+    	String Path = "images/2019010A.dcm";
+    	InputStream iS = new ByteArrayInputStream(Path.getBytes());
+    	try {
+			BufferedImage bFi = ImageIO.read(iS);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	//Image image = Image.load("images/2019010A.dcm");
+    	//DicomImage dicomImage = (DicomImage) Image.load("images/2019010A.dcm");
     	//dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
     	//JpegOptions jpegOptions = new JpegOptions();
     	//dicomImage.save();
