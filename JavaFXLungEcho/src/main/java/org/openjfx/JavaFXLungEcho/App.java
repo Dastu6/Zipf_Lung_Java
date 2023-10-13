@@ -8,9 +8,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-import com.aspose.imaging.Image;
-import com.aspose.imaging.fileformats.dicom.DicomImage;
-import com.aspose.imaging.imageoptions.JpegOptions;
+
+
 
 /**
  * JavaFX App
@@ -35,15 +34,11 @@ public class App extends Application {
         return fxmlLoader.load();
     }
     
-    public static void test() {
-    	System.out.println("test");
-    	DicomImage dicomImage = (DicomImage) Image.load("images/2019010A.dcm");
-    	//dicomImage.setActivePage(dicomImage.getDicomPages()[0]);
-    	//JpegOptions jpegOptions = new JpegOptions();
-    	//dicomImage.save();
+    public static void test() throws IOException {
+    	DicomLoader r = new DicomLoader("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\test.dicom");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
     	test();
         launch();
     }
