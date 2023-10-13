@@ -8,6 +8,14 @@
 <VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.JavaFXLungEcho.PrimaryController">
    <children>
       <Label text="Primary View" />
+<<<<<<< HEAD
+=======
+      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../../../../../Pictures/home.jpg" />
+         </image>
+      </ImageView>
+>>>>>>> branch 'main' of https://github.com/Dastu6/Zipf_Lung_Java
       <Button fx:id="primaryButton" onAction="#switchToSecondary" text="Switch to Secondary View" />
    </children>
    <padding>
