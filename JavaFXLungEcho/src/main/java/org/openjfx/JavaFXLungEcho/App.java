@@ -35,7 +35,7 @@ public class App extends Application {
     }
     
     public static void test() throws IOException {
-    	DicomLoader r = new DicomLoader("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\101M0\\test.dicom");
+    	DicomLoader r = new DicomLoader("src/main/resources/images/dicom/2019010A.dcm");
     }
 
     public static void main(String[] args) throws IOException {

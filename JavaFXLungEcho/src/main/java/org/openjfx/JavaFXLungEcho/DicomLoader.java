@@ -34,7 +34,7 @@ public class DicomLoader {
 		 }
 	public void sauverImage(BufferedImage image,String nomImage) throws IOException
 	{
-	File nomfichier = new File("C:\\Users\\scizz\\Desktop\\Cours\\4A\\projet_genie_log\\" + nomImage + ".png");// ou jpg
+	File nomfichier = new File("src/main/resources/images/saved_or_converted/" + nomImage + ".png");// ou jpg
 	//image = ;
 	ImageIO.write(removeAlphaChannel(image), "PNG", nomfichier);//ou JPG
 	}
