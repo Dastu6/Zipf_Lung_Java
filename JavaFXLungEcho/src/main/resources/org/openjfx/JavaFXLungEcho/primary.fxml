@@ -3,19 +3,14 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.JavaFXLungEcho.PrimaryController">
+<VBox alignment="CENTER" onMouseClicked="#clickOnlistview" prefHeight="492.0" prefWidth="671.0" spacing="20.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.JavaFXLungEcho.PrimaryController">
    <children>
       <Label text="Primary View" />
-      <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../images/saved_or_converted/test2.png" />
-         </image>
-      </ImageView>
-      <Button fx:id="primaryButton" onAction="#switchToSecondary" text="Switch to Secondary View" />
+      <Button fx:id="primaryButton" onMouseClicked="#buttonCall" text="Sélectionner un dossier" />
+      <ListView fx:id="listview" onMouseClicked="#clickOnlistview" prefHeight="350.0" prefWidth="631.0" visible="false" />
    </children>
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

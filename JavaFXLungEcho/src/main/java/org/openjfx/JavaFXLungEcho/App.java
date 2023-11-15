@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ public class App extends Application {
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
+    
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
@@ -35,7 +37,7 @@ public class App extends Application {
     }
     
     public static void test() throws IOException {
-    	DicomLoader r = new DicomLoader("src/main/resources/images/dicom/2019010A.dcm");
+    	DicomLoader r = new DicomLoader("target\\classes\\images\\dicom\\2019010E");
     }
 
     public static void main(String[] args) throws IOException {
