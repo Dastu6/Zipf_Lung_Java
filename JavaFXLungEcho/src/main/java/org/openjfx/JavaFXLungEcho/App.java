@@ -34,13 +34,15 @@ public class App extends Application {
         return fxmlLoader.load();
     }
     
-    public static void LoadingDicomFile() throws IOException {
-    	DicomLoader r = new DicomLoader("2019010A", 0);
-    	r.BufferedImageToPixelMatrix(r.dicomImage);
+    public static void TraitementDicom() throws IOException {
+    	DicomLoader dicomLoaded = new DicomLoader("2019010A", 0);
+    	TraitementBufferedImage traitement = new TraitementBufferedImage();
+    	traitement.buffImg = dicomLoaded.dicomImage;
+    	traitement.BufferedImageToPixelMatrix(traitement.buffImg);
     }
 
     public static void main(String[] args) throws IOException {
-    	LoadingDicomFile();
+    	TraitementDicom();
         launch();
     }
 

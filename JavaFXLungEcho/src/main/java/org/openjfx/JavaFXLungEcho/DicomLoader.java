@@ -12,26 +12,24 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.dcm4che3.imageio.plugins.dcm.*;
 public class DicomLoader {
-	private File f;
+	private File dicomFile;
 	public BufferedImage dicomImage;
-	public int[][] greyPixelsLevels;
 	//Fonction appelée pour charger, sauvegarder une frame d'un fichier Dicom
 	public DicomLoader(String fileName, int frameIndex) throws IOException
 	{
-		f = new File("src/main/resources/images/dicom/" + fileName + ".dcm");
-		dicomImage = chargeImageDicomBufferise(f, frameIndex);
+		dicomFile = new File("src/main/resources/images/dicom/" + fileName + ".dcm");
+		dicomImage = chargeImageDicomBufferise(frameIndex);
 		sauverImage(dicomImage,fileName);
-		BufferedImageToPixelMatrix(dicomImage);
 	}
 	
-	public BufferedImage chargeImageDicomBufferise(File file, int value) throws IOException {
+	public BufferedImage chargeImageDicomBufferise(int value) throws IOException {
 		 Iterator<ImageReader> iter =
 		ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
 		 ImageReader readers = iter.next();//on se déplace dans l'image dicom
 		DicomImageReadParam param1 = (DicomImageReadParam)
 		readers.getDefaultReadParam();//return DicomImageReadParam
 		 // Adjust the values of Rows and Columns in it and add a Pixel Data attribute with the bytearray from the DataBuffer of the scaled Raster
-		 ImageInputStream iis = ImageIO.createImageInputStream(file);
+		 ImageInputStream iis = ImageIO.createImageInputStream(dicomFile);
 		 readers.setInput(iis, false);//sets the input source to use the given ImageInputSteam or otherObject
 		 BufferedImage image = readers.read(value,param1);//BufferedImage image =reader.read(frameNumber, param); frameNumber = int qui est l'imageIndex
 		 System.out.println("buffered image data : " + image);//affichage au terminal des caractères de l'image
@@ -44,24 +42,6 @@ public class DicomLoader {
 	File nomfichier = new File("src/main/resources/images/saved_or_converted/" + nomImage + ".png");// ou jpg
 	//image = ;
 	ImageIO.write(removeAlphaChannel(image), "PNG", nomfichier);//ou JPG
-	}
-	
-	//Fonction qui va permettre de stocker la matrice de pixels d'une des frames de l'image dicom
-	public void BufferedImageToPixelMatrix(BufferedImage bufferImg) {
-		int widthImg = bufferImg.getWidth();
-		int heightImg = bufferImg.getHeight();
-		greyPixelsLevels = new int[heightImg][widthImg];
-		for (int i = 0; i < heightImg; i++) {
-			for (int j = 0; j < widthImg; j++) {
-				int col = bufferImg.getRGB(j, i);
-				int blue = col & 0xff;
-				int green = col & 0xff00 >> 8;
-				int red = col & 0xff0000 >> 16;
-				//Utilisation de la norme rec 709
-				greyPixelsLevels[i][j] = (int)(0.2126 * red + 0.7152 * green + 0.0722 * blue);
-				System.out.println(greyPixelsLevels[i][j] + "\n");
-			}
-		}
 	}
 	
 	private  BufferedImage removeAlphaChannel(BufferedImage img) {
