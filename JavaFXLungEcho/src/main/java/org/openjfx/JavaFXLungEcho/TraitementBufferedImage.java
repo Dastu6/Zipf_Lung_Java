@@ -71,73 +71,27 @@ public class TraitementBufferedImage {
 				triangle_grey_value = greyPixelsLevels[i][oldWidth-1];
 				hOmega = i;
 				hOmega_diff++;
-				System.out.println(triangle_grey_value);
 			}
-			//System.out.println("valeur colonne droite " + greyPixelsLevels[i][oldWidth-2] + "pos " + i);
 		}
 		int dOmega = oldWidth-1;
 		int gOmega = 0;
 		while (greyPixelsLevels[hOmega][gOmega] != triangle_grey_value) { //On a ici le second triangle
 			gOmega++;
 		}
-		System.out.println("gOmega = " + gOmega + " pixels " + greyPixelsLevels[hOmega][gOmega]);
 
 		//Etape 0 : trouver le milieu de l'image actuelle et descendre jusqu'au premier pixel de l'image.
 		int midWidth = (int)(((oldWidth-1)-gOmega)/2);
 		int h0 = 0;
 		
-		//System.out.println(oldWidth);
-		//System.out.println(oldHeight);
-		//System.out.println(midWidth);
-		//System.out.println(minimumGreyIntensityBeforeTreatment);
-		//System.out.println(greyPixelsLevels[h0][midWidth]);
 		while (greyPixelsLevels[h0][midWidth] <= seuil_detect_debut && h0 < oldHeight) { //La boucle s'arrête lorsqu'on trouve un pixel non noir (donc un point de l'écho)
-			System.out.println(greyPixelsLevels[h0][midWidth]);
 			h0++;
-			System.out.println("H0 = "+h0);
 		}
-		
-		//Ne fonctionne pas totalement mais pas très grave pour le moment
-		/*
-		//Etape 1 : aller sur les extrémités de l'échographie sur la ligne h0 
-		int g1 = midWidth;
-		int d1 = midWidth;
-		//System.out.println("Gauche"+greyPixelsLevels[h0][g1] + "Droite"+greyPixelsLevels[h0][d1]);
-		//partir du milieu et regarder si a droite et en meme temps (donc || ) à gauche on a un enchainement de 2/3 pixels au min
-		//while ((greyPixelsLevels[h0][g1] > seuil_detect_fin) && (greyPixelsLevels[h0][d1] > seuil_detect_fin)) {
-			
-		//}
-		while (g1>0 && d1 <oldWidth) {
-			g1--;
-			d1++;
-			//g1_bis++;
-			//d1_bis--;
-			System.out.println("Gauche "+g1 + " Droite "+d1);
-			System.out.println("Valeurs : Gauche "+greyPixelsLevels[h0][g1] + " Droite "+greyPixelsLevels[h0][d1]);
-		}
-		*/
 		
 		//Etape 2 : Trouver le point le plus bas de l'échographie
 		int h2 = oldHeight-1;
 		while (greyPixelsLevels[h2][midWidth] < seuil_detect_debut) { //On part du bas et on remonte
 			h2--;
 		}
-				
-		/*
-		//Etape 5 : on va se décaler jusqu'à trouver les extrémités du sommet g5 et d5
-		//int ratio_droite = (h4-h0)/(d3-d1);
-		//int ratio_gauche = (h4-h0)/(g1-g3);
-		//int ratio_pente = (ratio_droite+ratio_gauche)/2;
-		int h5 = h0;
-		int g5 = g1;
-		int d5 = d1;
-		while (h5 > 1) {
-			while ((pixelHasNonBlackPixelAbove(greyPixelsLevels, g5, h5) == false) && (pixelHasNonBlackPixelAbove(greyPixelsLevels, d5, h5) == false)) {
-				g3++;
-				d3--;
-				h5--;
-			}
-		}*/
 		
 		//Etape 6 : calcul de la nouvelle image 
 		int newWidth = dOmega - gOmega + 1;
