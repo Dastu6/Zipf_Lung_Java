@@ -17,7 +17,7 @@ public class DicomLoader {
 	//Fonction appelée pour charger, sauvegarder une frame d'un fichier Dicom
 	public DicomLoader(String fileName, int frameIndex) throws IOException
 	{
-		dicomFile = new File("src/main/resources/images/dicom/" + fileName + ".dcm");
+		dicomFile = new File("src/main/resources/images/dicom/" + fileName + "Frame" +frameIndex + ".dcm");
 		dicomImage = chargeImageDicomBufferise(frameIndex);
 		sauverImage(dicomImage,fileName);
 	}
