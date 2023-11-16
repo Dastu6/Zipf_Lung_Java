@@ -5,7 +5,7 @@ public final class Model {
 	//On crée un singleton afin de toujours avoir qu'une instanciation du modèle
 	private static volatile Model instance;
 	//Méthode thread-safe pour récupérer l'instance du singleton
-	 public static Model getInstance(String value) {
+	 public static Model getInstance() {
 	        // The approach taken here is called double-checked locking (DCL). It
 	        // exists to prevent race condition between multiple threads that may
 	        // attempt to get singleton instance at the same time, creating separate
@@ -36,5 +36,9 @@ public final class Model {
 	 }
 	 
 	 //Ici on peut mettre nos attributs et méthode de la classe
+	 DicomLoader dicomLoader;
+	 TraitementBufferedImage traitement;
+	 
+	 
 	 
 }

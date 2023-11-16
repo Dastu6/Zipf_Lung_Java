@@ -1,6 +1,7 @@
 package org.openjfx.JavaFXLungEcho;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.ArrayList;
 
@@ -52,7 +53,17 @@ private File selectedDirectory;
     
     @FXML
     void clickOnlistview(MouseEvent event) {
-    	 System.out.println("clicked on " + listview.getSelectionModel().getSelectedItem());
+    	String imagename = listview.getSelectionModel().getSelectedItem();
+    	 System.out.println("clicked on " + imagename);
+    	 System.out.println("dirPath : "+selectedDirectory.getAbsolutePath());
+    	 String imagePath =selectedDirectory.getAbsolutePath()+"\\"+ imagename;
+    	 System.out.println(imagePath);
+    	 try {
+			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),listview.getSelectionModel().getSelectedItem(),0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     

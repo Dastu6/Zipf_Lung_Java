@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 import java.io.IOException;
 
@@ -16,8 +15,8 @@ import java.io.IOException;
  * JavaFX App
  */
 public class App extends Application {
-
     private static Scene scene;
+    private static Model model;
     
     @Override
     public void start(Stage stage) throws IOException {
@@ -29,19 +28,24 @@ public class App extends Application {
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
-    
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
     
-    public static void test() throws IOException {
-    	DicomLoader r = new DicomLoader("target\\classes\\images\\dicom\\2019010E");
+    public static void TraitementDicom() throws IOException {
+ 
+    	model.dicomLoader = new DicomLoader("2019010A", 0);
+    	model.traitement = new TraitementBufferedImage();
+    	model.traitement.buffImg = model.dicomLoader.dicomImage;
+    	model.traitement.BufferedImageToPixelMatrix(model.traitement.buffImg);
     }
 
     public static void main(String[] args) throws IOException {
-    	test();
+			model = Model.getInstance();
+
+    	TraitementDicom();
         launch();
     }
 
