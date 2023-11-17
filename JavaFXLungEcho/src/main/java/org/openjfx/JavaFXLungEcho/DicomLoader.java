@@ -22,6 +22,11 @@ public class DicomLoader {
 		sauverImage(dicomImage,fileName);
 	}
 	
+	public DicomLoader(String dirPath,String fileName) throws IOException
+	{
+		
+		dicomFile = new File(dirPath +"\\"+ fileName );
+	}
 	public DicomLoader(String dirPath,String fileName, int frameIndex) throws IOException
 	{
 		
@@ -36,16 +41,26 @@ public class DicomLoader {
 		
 	}
 	
-	public BufferedImage chargeImageDicomBufferise(int value) throws IOException {
-		 Iterator<ImageReader> iter =
-		ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
+	int getNbImages() throws IOException
+	{
+		Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
 		 ImageReader readers = iter.next();//on se déplace dans l'image dicom
-		DicomImageReadParam param1 = (DicomImageReadParam)
-		readers.getDefaultReadParam();//return DicomImageReadParam
+		DicomImageReadParam param1 = (DicomImageReadParam) readers.getDefaultReadParam();//return DicomImageReadParam
+		 // Adjust the values of Rows and Columns in it and add a Pixel Data attribute with the bytearray from the DataBuffer of the scaled Raster
+		 ImageInputStream iis = ImageIO.createImageInputStream(dicomFile);
+		 readers.setInput(iis, false);
+		return readers.getNumImages(true);
+	}
+	
+	public BufferedImage chargeImageDicomBufferise(int value) throws IOException {
+		 Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
+		 ImageReader readers = iter.next();//on se déplace dans l'image dicom
+		DicomImageReadParam param1 = (DicomImageReadParam) readers.getDefaultReadParam();//return DicomImageReadParam
 		 // Adjust the values of Rows and Columns in it and add a Pixel Data attribute with the bytearray from the DataBuffer of the scaled Raster
 		 ImageInputStream iis = ImageIO.createImageInputStream(dicomFile);
 		 readers.setInput(iis, false);//sets the input source to use the given ImageInputSteam or otherObject
 		 BufferedImage image = readers.read(value,param1);//BufferedImage image =reader.read(frameNumber, param); frameNumber = int qui est l'imageIndex
+		 
 		 System.out.println("buffered image data : " + image);//affichage au terminal des caractères de l'image
 		 readers.dispose();//Releases all of the native sreen resources used by this Window, itssubcomponents, and all of its owned children
 		 return image;

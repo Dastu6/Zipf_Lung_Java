@@ -7,7 +7,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 
 
 
@@ -40,13 +42,15 @@ public class App extends Application {
     	model.traitement = new TraitementBufferedImage();
     	model.traitement.buffImg = model.dicomLoader.dicomImage;
     	model.traitement.BufferedImageToPixelMatrix(model.traitement.buffImg);
+    	model.traitement.BufferedImageToSonogram();
+    	File newF = new File("src/main/resources/images/saved_or_converted/test_echo.png");
+    	ImageIO.write(model.traitement.echographyImg, "PNG", newF );
     }
 
     public static void main(String[] args) throws IOException {
 			model = Model.getInstance();
 
-    	TraitementDicom();
+    	//TraitementDicom();
         launch();
     }
-
 }
