@@ -11,6 +11,7 @@ public class TraitementBufferedImage {
 	public int seuil_detect_fin;
 	public int[][] greyMatrixOnlySonogram;
 	public BufferedImage echographyImg;
+	
 	public TraitementBufferedImage() {
 		
 	}
