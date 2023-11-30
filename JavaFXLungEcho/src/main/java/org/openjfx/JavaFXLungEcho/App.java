@@ -39,7 +39,6 @@ public class App extends Application {
     public static void TraitementDicom() throws IOException {
  
     	model.dicomLoader = new DicomLoader("2019010A", 0);
-    	model.traitement = new TraitementBufferedImage();
     	model.traitement.buffImg = model.dicomLoader.dicomImage;
     	model.traitement.BufferedImageToPixelMatrix(model.traitement.buffImg);
     	model.traitement.BufferedImageToSonogram();
@@ -51,6 +50,7 @@ public class App extends Application {
 			model = Model.getInstance();
 
     	//TraitementDicom();
+		model.traitement = new TraitementBufferedImage();
         launch();
     }
 }

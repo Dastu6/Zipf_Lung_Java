@@ -37,6 +37,7 @@ public final class Model {
 	 
 	 //Ici on peut mettre nos attributs et méthode de la classe
 	 DicomLoader dicomLoader;
+	 
 	 TraitementBufferedImage traitement;
 	 
 	 

@@ -62,6 +62,7 @@ public class DicomLoader {
 		 BufferedImage image = readers.read(value,param1);//BufferedImage image =reader.read(frameNumber, param); frameNumber = int qui est l'imageIndex
 		 
 		 System.out.println("buffered image data : " + image);//affichage au terminal des caractères de l'image
+		 //Essayez de l'enlever pour que ça lag moinsx
 		 readers.dispose();//Releases all of the native sreen resources used by this Window, itssubcomponents, and all of its owned children
 		 return image;
 		 }
