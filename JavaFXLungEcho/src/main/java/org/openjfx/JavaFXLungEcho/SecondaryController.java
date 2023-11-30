@@ -6,6 +6,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -15,6 +17,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+
 
 public class SecondaryController {
 
@@ -37,6 +40,10 @@ public class SecondaryController {
 
 	@FXML
 	private Button secondaryButton;
+	
+	
+	@FXML
+    private LineChart<Number, Number> zipfChart;
 
 	@FXML
 	public void initialize() {
@@ -46,6 +53,7 @@ public class SecondaryController {
 		choiceboxRecouvrement.setVisible(false);
 		labelRecouvrement.setVisible(false);
 		checkbox.setDisable(true);
+		
 	}
 
 	// Méthode appelée quand on appuie sur le bouton recouvrement
@@ -60,9 +68,15 @@ public class SecondaryController {
 		}
 	}
 
+	//méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
 	@FXML
 	void launchZipf(MouseEvent event) {
-
+		zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(), new LogarithmicAxis());
+		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
+		//Model.getInstance().
+		//series.getData().add(new XYChart.Data<Number,Number>())
+		
+		//zipfChart.getData().add(series);
 	}
 
 	// Fonction pour convertir une bufferedImage en Image JavaFX

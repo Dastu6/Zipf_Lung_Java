@@ -41,5 +41,4 @@ public final class Model {
 	 TraitementBufferedImage traitement;
 	 
 	 
-	 
 }
