@@ -47,10 +47,10 @@ public class App extends Application {
     }
 
     public static void main(String[] args) throws IOException {
-			model = Model.getInstance();
+    	model = Model.getInstance();
 
-    	//TraitementDicom();
-		model.traitement = new TraitementBufferedImage();
+        //TraitementDicom();
+        model.traitement = new TraitementBufferedImage();
         launch();
     }
 }
