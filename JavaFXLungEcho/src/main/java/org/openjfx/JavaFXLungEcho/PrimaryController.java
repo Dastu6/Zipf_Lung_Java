@@ -111,10 +111,10 @@ private File selectedDirectory;
     
     @FXML
     void cutImage(MouseEvent event) {
-    	Model.getInstance().traitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
-    	Model.getInstance().traitement.BufferedImageToPixelMatrix(Model.getInstance().traitement.buffImg);
-    	Model.getInstance().traitement.BufferedImageToSonogram();
-    	imageContainer1.setImage(convertToFxImage(Model.getInstance().traitement.echographyImg));
+    	Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
+    	Model.getInstance().pretraitement.BufferedImageToPixelMatrix(Model.getInstance().pretraitement.buffImg);
+    	Model.getInstance().pretraitement.BufferedImageToSonogram();
+    	imageContainer1.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
     }
     
 
