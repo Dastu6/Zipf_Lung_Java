@@ -10,7 +10,7 @@ public class TraitementZipf {
 	public int recouvrement;
 	public HashMap<Integer,Integer> mapMotifNombreOccurence;
 	
-	public TraitementZipf(int[][] matrix) {
+	public TraitementZipf(int[][] matrix) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		recouvrement = 0;
@@ -41,12 +41,12 @@ public class TraitementZipf {
 		int IntMotif = 0;
 		int len = motif.length;
 		for (int i = 0; i < len; i++) {
-			IntMotif += motif[i] * Math.pow(10,i);
+			IntMotif += motif[i] * Math.pow(10,(len-1)-i);
 		}
 		return IntMotif;
 	}
 	
-	public void traitementZipfFromGreyMatrix() {
+	public void motifMapFromGreyMatrix() {
 		int number_row = greyMatrix.length;
 		int number_col = greyMatrix[0].length;
 		int max_row_iteration = number_row/motifSize; //On va enlever les quelques pixels qui dépassent 
