@@ -28,11 +28,13 @@ public class TraitementZipf {
 		motif_code = motif.clone();
 		Arrays.sort(motif_code);
 		int old = motif[0];
+		int count = 0;
 		for (int i = 0; i < len; i++) {
 			if (motif[i] != old) {
 				old = motif[i];
+				count++;
 			}
-			motif_code[i] = old;
+			motif_code[i] = count;
 		}
 		return motif_code;
 	}
@@ -68,6 +70,9 @@ public class TraitementZipf {
 				if (mapMotifNombreOccurence.containsKey(intCodedMotif)){ //Si le motif est déjà présent dans notre image
 					int old_value = mapMotifNombreOccurence.get(intCodedMotif); //Alors on augmente son nombre d'occurence de 1
 					mapMotifNombreOccurence.replace(intCodedMotif, old_value+1);
+				}
+				else {
+					mapMotifNombreOccurence.put(intCodedMotif, 1);
 				}
 			}
 		}
