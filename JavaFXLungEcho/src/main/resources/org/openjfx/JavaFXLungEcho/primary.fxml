@@ -32,7 +32,7 @@
                <children>
                   <ImageView fx:id="imageContainer1" fitHeight="228.0" fitWidth="369.0" pickOnBounds="true" preserveRatio="true" />
                </children></HBox>
-            <ImageView fx:id="imageContainer" fitHeight="179.0" fitWidth="402.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
+            <ImageView fx:id="imageContainer" fitHeight="179.0" fitWidth="402.0" onMouseClicked="#switchImage" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
             <SplitPane dividerPositions="0.48" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" GridPane.halignment="CENTER">
               <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="45.0" prefWidth="412.0">

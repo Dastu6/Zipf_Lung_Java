@@ -2,6 +2,10 @@ package org.openjfx.JavaFXLungEcho;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TraitementZipf {
 	public int[][] greyMatrix;
@@ -57,7 +61,7 @@ public class TraitementZipf {
 		//mais qui ne recouvrent pas entièrement l'image
 		for (int i = corner_limit; i < max_row_iteration; i++) {
 			for (int j = corner_limit; j < max_col_iteration; j++) { //Pour chaque pixel on va maintenant regarder son voisinage
-				int[] listMotif = new int[motifSize];
+				int[] listMotif = new int[motifSize * motifSize];
 				int count = 0;
 				for (int ki = i-corner_limit; ki <= i+corner_limit; ki++) {
 					for (int kj = j-corner_limit; kj <= j+corner_limit; kj++) {
@@ -76,5 +80,18 @@ public class TraitementZipf {
 				}
 			}
 		}
+	}
+	
+	public void printMapValuesAndKeys(HashMap<Integer,Integer> map) {
+		System.out.println(map.keySet());
+		System.out.println(map.values());
+	}
+	
+	public HashMap<Integer,Integer> sortMapByOccurence() {
+		Stream<HashMap.Entry<Integer,Integer>> sortedMapStream;
+		sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Map.Entry.comparingByValue());
+		HashMap<Integer,Integer> sortedMap;
+		sortedMap = sortedMapStream.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (intK, intV) -> intK, LinkedHashMap::new));
+		return sortedMap;
 	}
 }

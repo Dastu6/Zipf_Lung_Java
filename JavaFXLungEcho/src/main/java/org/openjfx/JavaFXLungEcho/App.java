@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -37,20 +38,28 @@ public class App extends Application {
     }
     
     public static void TraitementDicom() throws IOException {
- 
-    	model.dicomLoader = new DicomLoader("2019010A", 0);
-    	model.traitement.buffImg = model.dicomLoader.dicomImage;
-    	model.traitement.BufferedImageToPixelMatrix(model.traitement.buffImg);
-    	model.traitement.BufferedImageToSonogram();
+    	model.dicomLoader = new DicomLoader("2019010K", 0);
+    	model.pretraitement = new TraitementBufferedImage();
+    	model.pretraitement.buffImg = model.dicomLoader.dicomImage;
+    	model.pretraitement.BufferedImageToPixelMatrix(model.pretraitement.buffImg);
+    	model.pretraitement.BufferedImageToSonogram();
     	File newF = new File("src/main/resources/images/saved_or_converted/test_echo.png");
-    	ImageIO.write(model.traitement.echographyImg, "PNG", newF );
+    	ImageIO.write(model.pretraitement.echographyImg, "PNG", newF );
+    	
+    	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram);
+    	model.traitementZipf.motifMapFromGreyMatrix();
+    	System.out.println("Map de base");
+    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
+    	HashMap<Integer,Integer> mapso= model.traitementZipf.sortMapByOccurence();
+    	System.out.println("Map sorted");
+    	model.traitementZipf.printMapValuesAndKeys(mapso);
     }
 
     public static void main(String[] args) throws IOException {
     	model = Model.getInstance();
 
         //TraitementDicom();
-        model.traitement = new TraitementBufferedImage();
+        model.pretraitement = new TraitementBufferedImage();
         launch();
     }
 }

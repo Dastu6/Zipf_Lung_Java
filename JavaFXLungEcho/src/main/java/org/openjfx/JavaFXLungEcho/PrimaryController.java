@@ -20,132 +20,128 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 
 public class PrimaryController {
-	private File selectedDirectory;
-	@FXML
-	private ListView<String> listview;
+private File selectedDirectory;
+    @FXML
+    private ListView<String> listview;
 
-	@FXML
-	private Button primaryButton;
+    @FXML
+    private Button primaryButton;
+    
+    @FXML
+    private Button primaryButton1;
 
-	@FXML
-	private Button primaryButton1;
+    @FXML
+    private Slider sliderImage;
+    
+    @FXML
+    private ImageView imageContainer;
 
-	@FXML
-	private Slider sliderImage;
+    @FXML
+    private ImageView imageContainer1;
+    
+    private Image currentImage;
 
-	@FXML
-	private ImageView imageContainer;
+    @FXML
+    void switchImage(MouseEvent event) throws IOException {
+    	App.setRoot("secondary");
+    }
+    @FXML
+    void buttonCall(MouseEvent event) {
+    	DirectoryChooser directoryChooser = new DirectoryChooser();
+    	selectedDirectory = directoryChooser.showDialog(null);
 
-	@FXML
-	private ImageView imageContainer1;
-
-	private Image currentImage;
-
-	//Méthode appelé lorsque l'on clique sur le bouton "sélectionner un dossier" cela remplit la listeView avec les noms des fichiers .dcm/.dicom ou sans extension
-	@FXML
-	void buttonCall(MouseEvent event) {
-		DirectoryChooser directoryChooser = new DirectoryChooser();
-		selectedDirectory = directoryChooser.showDialog(null);
-
-		if (selectedDirectory == null) {
-			// No Directory selected
-		} else {
-			System.out.println(selectedDirectory.getAbsolutePath());
-			ArrayList<String> p = new ArrayList<String>();
-			for (File file : selectedDirectory.listFiles()) {
-				if (!file.isDirectory()) {
-					if (!getExtensionByStringHandling(file.getAbsolutePath()).isPresent()) {
-						System.out.println(file.getAbsolutePath());
-						p.add(file.getName());
-					}
-
-					else if (getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dcm")
-							|| getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dicom")) {
-						System.out.println(
-								"Extension de fichier : " + getExtensionByStringHandling(file.getAbsolutePath()).get());
-						System.out.println(file.getAbsolutePath());
-						p.add(file.getName());
-					}
-				}
-			}
-			listview.getItems().addAll(p);
-			listview.setDisable(false);
-			listview.setVisible(true);
-		}
-	}
-
-	//Lorsqu'on clique sur la listeview où se situe les fichiers on rentre dans cette méthode qui affiche l'image dans l'imageView
-	@FXML
-	void clickOnlistview(MouseEvent event) {
-		String imagename = listview.getSelectionModel().getSelectedItem();
-		System.out.println("clicked on " + imagename);
-		System.out.println("dirPath : " + selectedDirectory.getAbsolutePath());
-		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
-		System.out.println(imagePath);
-		try {
-			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),
-					listview.getSelectionModel().getSelectedItem(), 0);
-			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+    	if(selectedDirectory == null){
+    	     //No Directory selected
+    	}else{
+    	     System.out.println(selectedDirectory.getAbsolutePath());
+    	     ArrayList<String> p = new ArrayList<String>();
+    	     for (File file : selectedDirectory.listFiles()) {
+    	            if (!file.isDirectory()) {
+    	            	if(!getExtensionByStringHandling(file.getAbsolutePath()).isPresent())
+    	            	{
+    	            		System.out.println(file.getAbsolutePath());
+    	            		p.add(file.getName());
+    	            	}
+    	            		
+    	            	else if(getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dcm")||getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dicom"))
+    	            		{
+    	            		System.out.println("Extension de fichier : "+getExtensionByStringHandling(file.getAbsolutePath()).get());
+    	            		System.out.println(file.getAbsolutePath());
+    	            		p.add(file.getName());
+    	            		}
+    	            }
+    	        }
+    	     listview.setVisible(true);
+    	     listview.getItems().addAll(p);
+    	     listview.setDisable(false);
+    	     listview.setVisible(true);
+    	}
+    }
+    //Affiche l'image correspondant au fichier sélectionner par l'utilisateur dans la listview
+    @FXML
+    void clickOnlistview(MouseEvent event) {
+    	String imagename = listview.getSelectionModel().getSelectedItem();
+    	 System.out.println("clicked on " + imagename);
+    	 System.out.println("dirPath : "+selectedDirectory.getAbsolutePath());
+    	 String imagePath =selectedDirectory.getAbsolutePath()+"\\"+ imagename;
+    	 System.out.println(imagePath);
+    	 try {
+			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),listview.getSelectionModel().getSelectedItem(),0);
+			currentImage= convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
 			imageContainer.setImage(currentImage);
 			sliderImage.setVisible(true);
-			sliderImage.setMax(Model.getInstance().dicomLoader.getNbImages() - 1);
+			sliderImage.setMax(Model.getInstance().dicomLoader.getNbImages()-1);
 			sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
 
 				@Override
 				public void changed(ObservableValue<? extends Number> observable, Number oldNumber, Number newNumber) {
 					try {
-						Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
-								.chargeImageDicomBufferise(newNumber.intValue());
+						Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader.chargeImageDicomBufferise(newNumber.intValue());
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+					currentImage= convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
 					imageContainer.setImage(currentImage);
-				}
+				}			
 			});
-
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+    }
+    //Fais le prétraitement sur l'image et l'affiche 
+    @FXML
+    void cutImage(MouseEvent event) {
+    	Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
+    	Model.getInstance().pretraitement.BufferedImageToPixelMatrix(Model.getInstance().pretraitement.buffImg);
+    	Model.getInstance().pretraitement.BufferedImageToSonogram();
+    	imageContainer1.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
+    }
+    
 
-	//Méthode appelé quand on clique sur le bouton Traiter l'image, cela va permetrre un prétraitement sur l'image, on va supprimer les parties inutiles et récupérer
-	//Beaucoup d'information vis à vis de celle-ci
-	@FXML
-	void cutImage(MouseEvent event) throws IOException {
-		Model.getInstance().traitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
-		Model.getInstance().traitement.BufferedImageToPixelMatrix(Model.getInstance().traitement.buffImg);
-		Model.getInstance().traitement.BufferedImageToSonogram();
-		imageContainer1.setImage(convertToFxImage(Model.getInstance().traitement.echographyImg));
-	}
-	
-	//méthode appelé lorsqu'on clique sur le bouton pour sélectionner une image
-	  @FXML
-	    void switchImage(MouseEvent event) throws IOException {
-		  App.setRoot("secondary");
-	    }
-	
-	  //Méthode utilisée pour avoir en string, l'extension du fichier(passé en paramètre)
-	private Optional<String> getExtensionByStringHandling(String filename) {
-		return Optional.ofNullable(filename).filter(f -> f.contains("."))
-				.map(f -> f.substring(filename.lastIndexOf(".") + 1));
-	}
+    private Optional<String> getExtensionByStringHandling(String filename) {
+    	return Optional.ofNullable(filename)
+    			.filter(f -> f.contains("."))
+    			.map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    	}
+    
+    //Fonction pour convertir une bufferedImage en Image JavaFX
+    private Image convertToFxImage(BufferedImage image) {
+    	WritableImage wr = null;
+    	if (image != null) {
+    		wr = new WritableImage(image.getWidth(), image.getHeight());
+    		PixelWriter pw = wr.getPixelWriter();
+    		for (int x = 0; x < image.getWidth(); x++) {
+    			for (int y = 0; y < image.getHeight(); y++) {
+    				pw.setArgb(x, y, image.getRGB(x, y));
+    			}
+    		}
+    	}
+    	
+    	return new ImageView(wr).getImage();
+    }
+    }
 
-	// Fonction pour convertir une bufferedImage en Image JavaFX
-	private Image convertToFxImage(BufferedImage image) {
-		WritableImage wr = null;
-		if (image != null) {
-			wr = new WritableImage(image.getWidth(), image.getHeight());
-			PixelWriter pw = wr.getPixelWriter();
-			for (int x = 0; x < image.getWidth(); x++) {
-				for (int y = 0; y < image.getHeight(); y++) {
-					pw.setArgb(x, y, image.getRGB(x, y));
-				}
-			}
-		}
 
-		return new ImageView(wr).getImage();
-	}
-}
