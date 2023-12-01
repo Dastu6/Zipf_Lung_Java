@@ -8,12 +8,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -21,6 +24,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.layout.StackPane;
 
 public class SecondaryController {
 
@@ -44,13 +48,13 @@ public class SecondaryController {
 	@FXML
 	private Button secondaryButton;
 	
-	
 	@FXML
     private LineChart<Number, Number> zipfChart;
 
 
     @FXML
-    private VBox vBox;
+    private VBox mainPane;
+    
 	@FXML
 	public void initialize() {
 		imageViewer.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
@@ -77,21 +81,23 @@ public class SecondaryController {
 	@FXML
 	void launchZipf(MouseEvent event) {
 		Model model = Model.getInstance();
-		//LineChart<Number, Number> zzipfChart = new LineChart<Number, Number>(new LogarithmicAxis(), new LogarithmicAxis());
+		LineChart<Number, Number> zzipfChart = new LineChart<Number, Number>(new LogarithmicAxis(), new LogarithmicAxis());
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram);
 		model.traitementZipf.motifMapFromGreyMatrix();
-		HashMap<Integer,Integer> mapso= model.traitementZipf.sortMapByOccurence();
+		model.traitementZipf.sortMapByOccurence();
+		HashMap<String,Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
 		int i = 0;
-		for(Entry<Integer, Integer> entry : mapso.entrySet())
+		for(Entry<String, Integer> entry : mapso.entrySet())
 		{
 			Integer value = entry.getValue();
 			series.getData().add(new XYChart.Data<Number,Number>(value,i));
 			System.out.println("Valeur : "+value+" , i : "+i );
 			i++;
 		}
-		//zipfChart
+		zzipfChart.getData().add(series);
 		zipfChart.getData().add(series);
+		mainPane.getChildren().add(zzipfChart);
 		model.traitementZipf.printMapValuesAndKeys(mapso);
 		/*
 		XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
