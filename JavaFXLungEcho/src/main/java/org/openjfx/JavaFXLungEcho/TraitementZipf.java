@@ -15,14 +15,16 @@ public class TraitementZipf {
 	public int seuilPixelDifferenceDetection;
 	public int recouvrement;
 	public boolean specificOrientation;
+	public boolean ascendSortingMap;
 	public HashMap<String,Integer> mapMotifNombreOccurence;
 	public HashMap<String,Integer> mapSortedCodedMotifOccurence;
 	
-	public TraitementZipf(int[][] matrix) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
+	public TraitementZipf(int[][] matrix, boolean specifOrientation, boolean sortingMap) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		recouvrement = 0;
-		specificOrientation = true;
+		specificOrientation = specifOrientation;
+		ascendSortingMap = sortingMap;
 		mapMotifNombreOccurence = new HashMap<String,Integer>();
 	}
 	
@@ -81,10 +83,15 @@ public class TraitementZipf {
 	
 	public void sortMapByOccurence() {
 		Stream<HashMap.Entry<String,Integer>> sortedMapStream;
-		sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Map.Entry.comparingByValue());
+		if (ascendSortingMap) {
+			sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Map.Entry.comparingByValue());
+		}
+		else {
+			sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Collections.reverseOrder(Map.Entry.comparingByValue()));
+		}
 		mapSortedCodedMotifOccurence = sortedMapStream.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (intK, intV) -> intK, LinkedHashMap::new));
 	}
-	
+
 	public void motifMapFromGreyMatrix() {
 		int number_row = greyMatrix.length;
 		int number_col = greyMatrix[0].length;
