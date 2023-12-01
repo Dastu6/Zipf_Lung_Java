@@ -50,9 +50,9 @@ public class App extends Application {
     	model.traitementZipf.motifMapFromGreyMatrix();
     	System.out.println("Map de base");
     	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
-    	HashMap<Integer,Integer> mapso= model.traitementZipf.sortMapByOccurence();
+    	model.traitementZipf.sortMapByOccurence();
     	System.out.println("Map sorted");
-    	model.traitementZipf.printMapValuesAndKeys(mapso);
+    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
     }
 
     public static void main(String[] args) throws IOException {

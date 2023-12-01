@@ -1,6 +1,8 @@
 package org.openjfx.JavaFXLungEcho;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,25 +14,28 @@ public class TraitementZipf {
 	public int motifSize; //motif x motif
 	public int seuilPixelDifferenceDetection;
 	public int recouvrement;
-	public HashMap<Integer,Integer> mapMotifNombreOccurence;
+	public boolean specificOrientation;
+	public HashMap<String,Integer> mapMotifNombreOccurence;
+	public HashMap<String,Integer> mapSortedCodedMotifOccurence;
 	
 	public TraitementZipf(int[][] matrix) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		recouvrement = 0;
-		mapMotifNombreOccurence = new HashMap<Integer,Integer>();
+		specificOrientation = true;
+		mapMotifNombreOccurence = new HashMap<String,Integer>();
 	}
 	
 	//Permet de convertir un nombre d'une base vers une autre base
 	public static int convertNumberBaseToBase(int number, int base, int new_base) {
 		return Integer.parseInt(Integer.toString(Integer.parseInt(String.valueOf(number), base), new_base));
 	}
-	//Permet de coder un motif
-	public int[] codeMotif(int[] motif) {
+	
+	//Permet de coder un motif dans lequel on se moque de la disposition des pixels les uns par rapport aux autres
+	public ArrayList<Integer> codeMotifNoSpecificOrientation(int[] motif) {
 		int len = motif.length;
-		int[] motif_code = new int[len];
-		motif_code = motif.clone();
-		Arrays.sort(motif_code);
+		ArrayList<Integer> motif_code = new ArrayList<>();
+		Collections.sort(motif_code);
 		int old = motif[0];
 		int count = 0;
 		for (int i = 0; i < len; i++) {
@@ -38,18 +43,46 @@ public class TraitementZipf {
 				old = motif[i];
 				count++;
 			}
-			motif_code[i] = count;
+			motif_code.add(count);
 		}
 		return motif_code;
 	}
 	
-	public int codedMotifToInt(int[] motif) {
-		int IntMotif = 0;
+	public ArrayList<Integer> codeMotifSpecificOrientation(int[] motif) {
 		int len = motif.length;
+		ArrayList<Integer> Stock = new ArrayList<>(); //On stocke toutes les valeurs du motif
 		for (int i = 0; i < len; i++) {
-			IntMotif += motif[i] * Math.pow(10,(len-1)-i);
+			if (!Stock.contains(motif[i])){
+				Stock.add(motif[i]);
+			}
 		}
-		return IntMotif;
+		Collections.sort(Stock); //Les stocks sont maintenant triés
+		ArrayList<Integer> Coded = new ArrayList<>();	
+		for (int i = 0; i < len; i++) {
+			int index = Stock.indexOf(motif[i]);
+			Coded.add(index); //On ajoute dans le motif coded l'indice du rang de motif plus ou moins (qui est dans stock)
+		}
+		return Coded;
+	}
+	
+	public String codedMotifToString(ArrayList<Integer> motif) {
+		String StrMotif = "";
+		int len = motif.size();
+		for (int i = 0; i < len; i++) {
+			StrMotif += motif.get(i);
+		}
+		return StrMotif;
+	}
+	
+	public void printMapValuesAndKeys(HashMap<String,Integer> map) {
+		System.out.println(map.keySet());
+		System.out.println(map.values());
+	}
+	
+	public void sortMapByOccurence() {
+		Stream<HashMap.Entry<String,Integer>> sortedMapStream;
+		sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Map.Entry.comparingByValue());
+		mapSortedCodedMotifOccurence = sortedMapStream.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (intK, intV) -> intK, LinkedHashMap::new));
 	}
 	
 	public void motifMapFromGreyMatrix() {
@@ -69,29 +102,22 @@ public class TraitementZipf {
 						count++;
 					}
 				}
-				int[] codedMotif = codeMotif(listMotif);
-				int intCodedMotif = codedMotifToInt(codedMotif);
-				if (mapMotifNombreOccurence.containsKey(intCodedMotif)){ //Si le motif est déjà présent dans notre image
-					int old_value = mapMotifNombreOccurence.get(intCodedMotif); //Alors on augmente son nombre d'occurence de 1
-					mapMotifNombreOccurence.replace(intCodedMotif, old_value+1);
+				ArrayList<Integer> codedMotif;
+				if (specificOrientation) {
+					codedMotif = codeMotifSpecificOrientation(listMotif);
 				}
 				else {
-					mapMotifNombreOccurence.put(intCodedMotif, 1);
+					codedMotif = codeMotifNoSpecificOrientation(listMotif);
+				}
+				String strCodedMotif = codedMotifToString(codedMotif);
+				if (mapMotifNombreOccurence.containsKey(strCodedMotif)){ //Si le motif est déjà présent dans notre image
+					int old_value = mapMotifNombreOccurence.get(strCodedMotif); //Alors on augmente son nombre d'occurence de 1
+					mapMotifNombreOccurence.replace(strCodedMotif, old_value+1);
+				}
+				else {
+					mapMotifNombreOccurence.put(strCodedMotif, 1);
 				}
 			}
 		}
-	}
-	
-	public void printMapValuesAndKeys(HashMap<Integer,Integer> map) {
-		System.out.println(map.keySet());
-		System.out.println(map.values());
-	}
-	
-	public HashMap<Integer,Integer> sortMapByOccurence() {
-		Stream<HashMap.Entry<Integer,Integer>> sortedMapStream;
-		sortedMapStream = mapMotifNombreOccurence.entrySet().stream().sorted(Map.Entry.comparingByValue());
-		HashMap<Integer,Integer> sortedMap;
-		sortedMap = sortedMapStream.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (intK, intV) -> intK, LinkedHashMap::new));
-		return sortedMap;
 	}
 }
