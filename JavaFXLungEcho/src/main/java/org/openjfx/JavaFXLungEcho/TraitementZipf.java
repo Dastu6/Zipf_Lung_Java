@@ -3,9 +3,11 @@ package org.openjfx.JavaFXLungEcho;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +42,7 @@ public class TraitementZipf {
 		//Nouvelle méthode
 		for (int i = 0; i < len; i++) {
 			ArrayList<Integer> Seuils = new ArrayList<>(); //On va stocker l'ensemble [motif-seuil; motif+seuil]
-			int ensemble_seuil_bas = motif[i]-seuilPixelDifferenceDetection;
+			int ensemble_seuil_bas = motif[i]-seuilPixelDifferenceDetection; //On vérifie c'est ensemble soit bien dans [0;255]
 			if (ensemble_seuil_bas < 0) {
 				ensemble_seuil_bas = 0;
 			}
@@ -58,7 +60,14 @@ public class TraitementZipf {
 		Collections.sort(Stock); //Les stocks sont maintenant triés
 		ArrayList<Integer> Coded = new ArrayList<>();	
 		for (int i = 0; i < len; i++) {
-			int index = Stock.indexOf(motif[i]);
+			int index;
+			if (Stock.indexOf(motif[i]) != -1) { //Si la valeur du pixel existe déjà alors on l'ajoute
+				index = Stock.indexOf(motif[i]);
+			}
+			else { //Sinon on va prendre l'index de la valeur qui est la plus proche de lui
+				int seeked = motif[i];
+				index = Stock.indexOf(Stock.stream().min(Comparator.comparingInt(k -> Math.abs(k - seeked))).orElseThrow(() -> new NoSuchElementException("Pas de valeur dans le motif")));
+			}
 			System.out.println(index);
 			Coded.add(index); //On ajoute dans le motif coded l'indice du rang de motif plus ou moins (qui est dans stock)
 		}
