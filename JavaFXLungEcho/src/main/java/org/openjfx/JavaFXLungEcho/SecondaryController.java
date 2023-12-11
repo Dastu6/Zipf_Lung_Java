@@ -47,14 +47,10 @@ public class SecondaryController {
 
 	@FXML
 	private Button secondaryButton;
-	
+
 	@FXML
-    private LineChart<Number, Number> zipfChart;
+	private VBox mainPane;
 
-
-    @FXML
-    private VBox mainPane;
-    
 	@FXML
 	public void initialize() {
 		imageViewer.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
@@ -77,37 +73,32 @@ public class SecondaryController {
 		}
 	}
 
-	//méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
+	// méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
 	@FXML
 	void launchZipf(MouseEvent event) {
 		Model model = Model.getInstance();
-		LineChart<Number, Number> zzipfChart = new LineChart<Number, Number>(new LogarithmicAxis(), new LogarithmicAxis());
+		//LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(),new LogarithmicAxis());
+		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new NumberAxis(),new NumberAxis());
+		//zipfChart.au
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram);
+		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, true, false);
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
-		HashMap<String,Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
+		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
 		int i = 0;
-		for(Entry<String, Integer> entry : mapso.entrySet())
-		{
+		for (Entry<String, Integer> entry : mapso.entrySet()) {
 			Integer value = entry.getValue();
-			series.getData().add(new XYChart.Data<Number,Number>(value,i));
-			System.out.println("Valeur : "+value+" , i : "+i );
+			if (i != 0) {
+				series.getData().add(new XYChart.Data<Number, Number>(value, i));
+				System.out.println("Valeur : " + value + " , i : " + i);
+			}
+
 			i++;
 		}
-		zzipfChart.getData().add(series);
 		zipfChart.getData().add(series);
-		mainPane.getChildren().add(zzipfChart);
+		mainPane.getChildren().add(zipfChart);
 		model.traitementZipf.printMapValuesAndKeys(mapso);
-		/*
-		XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-	    series1.getData().add(new XYChart.Data<Number, Number>(1, 20));
-	    series1.getData().add(new XYChart.Data<Number, Number>(2, 100));
-	    series1.getData().add(new XYChart.Data<Number, Number>(3, 80));
-	    series1.getData().add(new XYChart.Data<Number, Number>(4, 180));
-	    series1.getData().add(new XYChart.Data<Number, Number>(5, 20));
-	    series1.getData().add(new XYChart.Data<Number, Number>(6, 10));
-	    zipfChart.getData().add(series1);*/
+
 	}
 
 	// Fonction pour convertir une bufferedImage en Image JavaFX
