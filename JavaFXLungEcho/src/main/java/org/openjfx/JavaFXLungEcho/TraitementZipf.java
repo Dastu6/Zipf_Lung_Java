@@ -3,9 +3,11 @@ package org.openjfx.JavaFXLungEcho;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,12 +21,13 @@ public class TraitementZipf {
 	public HashMap<String,Integer> mapMotifNombreOccurence;
 	public HashMap<String,Integer> mapSortedCodedMotifOccurence;
 	
-	public TraitementZipf(int[][] matrix, boolean specifOrientation, boolean sortingMap) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
+	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		recouvrement = 0;
+		seuilPixelDifferenceDetection = seuil;
 		specificOrientation = specifOrientation;
-		ascendSortingMap = sortingMap;
+		ascendSortingMap = orderSortingMap;
 		mapMotifNombreOccurence = new HashMap<String,Integer>();
 	}
 	
@@ -33,36 +36,44 @@ public class TraitementZipf {
 		return Integer.parseInt(Integer.toString(Integer.parseInt(String.valueOf(number), base), new_base));
 	}
 	
-	//Permet de coder un motif dans lequel on se moque de la disposition des pixels les uns par rapport aux autres
-	public ArrayList<Integer> codeMotifNoSpecificOrientation(int[] motif) {
-		int len = motif.length;
-		ArrayList<Integer> motif_code = new ArrayList<>();
-		Collections.sort(motif_code);
-		int old = motif[0];
-		int count = 0;
-		for (int i = 0; i < len; i++) {
-			if (motif[i] != old) {
-				old = motif[i];
-				count++;
-			}
-			motif_code.add(count);
-		}
-		return motif_code;
-	}
-	
-	public ArrayList<Integer> codeMotifSpecificOrientation(int[] motif) {
+	public ArrayList<Integer> codeMotif(int[] motif) {
 		int len = motif.length;
 		ArrayList<Integer> Stock = new ArrayList<>(); //On stocke toutes les valeurs du motif
+		//Nouvelle méthode
 		for (int i = 0; i < len; i++) {
-			if (!Stock.contains(motif[i])){
+			ArrayList<Integer> Seuils = new ArrayList<>(); //On va stocker l'ensemble [motif-seuil; motif+seuil]
+			int ensemble_seuil_bas = motif[i]-seuilPixelDifferenceDetection; //On vérifie c'est ensemble soit bien dans [0;255]
+			if (ensemble_seuil_bas < 0) {
+				ensemble_seuil_bas = 0;
+			}
+			int ensemble_seuil_haut = motif[i]+seuilPixelDifferenceDetection;
+			if (ensemble_seuil_haut > 255) {
+				ensemble_seuil_haut = 255;
+			}
+			for (int s = ensemble_seuil_bas; s <= ensemble_seuil_haut; s++) {
+				Seuils.add(s);
+			}
+			if (Collections.disjoint(Stock, Seuils)) { //True si rien en commun
 				Stock.add(motif[i]);
 			}
 		}
 		Collections.sort(Stock); //Les stocks sont maintenant triés
 		ArrayList<Integer> Coded = new ArrayList<>();	
 		for (int i = 0; i < len; i++) {
-			int index = Stock.indexOf(motif[i]);
+			int index;
+			if (Stock.indexOf(motif[i]) != -1) { //Si la valeur du pixel existe déjà alors on l'ajoute
+				index = Stock.indexOf(motif[i]);
+			}
+			else { //Sinon on va prendre l'index de la valeur qui est la plus proche de lui
+				int seeked = motif[i];
+				index = Stock.indexOf(Stock.stream().min(Comparator.comparingInt(k -> Math.abs(k - seeked))).orElseThrow(() -> new NoSuchElementException("Pas de valeur dans le motif")));
+			}
+			System.out.println(index);
 			Coded.add(index); //On ajoute dans le motif coded l'indice du rang de motif plus ou moins (qui est dans stock)
+		}
+		System.out.println(Coded);
+		if (!specificOrientation) { //Soit on veut avoir l'orientation des motifs soit on s'en moque
+			Collections.sort(Coded);
 		}
 		return Coded;
 	}
@@ -109,13 +120,7 @@ public class TraitementZipf {
 						count++;
 					}
 				}
-				ArrayList<Integer> codedMotif;
-				if (specificOrientation) {
-					codedMotif = codeMotifSpecificOrientation(listMotif);
-				}
-				else {
-					codedMotif = codeMotifNoSpecificOrientation(listMotif);
-				}
+				ArrayList<Integer> codedMotif = codeMotif(listMotif);
 				String strCodedMotif = codedMotifToString(codedMotif);
 				if (mapMotifNombreOccurence.containsKey(strCodedMotif)){ //Si le motif est déjà présent dans notre image
 					int old_value = mapMotifNombreOccurence.get(strCodedMotif); //Alors on augmente son nombre d'occurence de 1
