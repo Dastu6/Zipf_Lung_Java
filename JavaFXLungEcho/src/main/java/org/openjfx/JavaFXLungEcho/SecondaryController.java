@@ -80,6 +80,17 @@ public class SecondaryController {
 
 		}
 	}
+	
+	//Méthode qui va permettre d'avoir les valeurs du motif en X et Y en fonction du choix fait par l'utilisateur
+	@FXML
+	int[] parseChoiceMotif() {
+		String choiceMotif = choicebox.getValue();
+		String[] motifsString = choiceMotif.split("x"); //C'est le x dans 3x3
+		int[] motifs = new int[2];
+		motifs[0] = Integer.parseInt(motifsString[0]);
+		motifs[1] = Integer.parseInt(motifsString[1]);
+		return motifs;
+	}
 
 	// méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
 	@FXML
@@ -93,7 +104,8 @@ public class SecondaryController {
 		BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testlena.jpg"));
 		er.BufferedImageToPixelMatrix(I);
 		// model.traitementZipf = new TraitementZipf(e.greyPixelsLevels,0,true,false);
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
+		int[] motifs = parseChoiceMotif();
+		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false, motifs[0], motifs[1]);
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
@@ -122,6 +134,8 @@ public class SecondaryController {
         secondStage.setTitle("Loi de zipf appliqué avec un motif "+choicebox.getValue());
         secondStage.show();
 		model.traitementZipf.printMapValuesAndKeys(mapso);
+		System.out.println(choicebox.getValue());
+		System.out.println("x : " + motifs[0] + "; y : " + motifs[1]);
 	}
 
 	// Fonction pour convertir une bufferedImage en Image JavaFX
