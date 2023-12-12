@@ -8,10 +8,13 @@ import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -21,25 +24,52 @@ import javafx.stage.DirectoryChooser;
 
 public class PrimaryController {
 private File selectedDirectory;
-    @FXML
-    private ListView<String> listview;
 
-    @FXML
-    private Button primaryButton;
-    
-    @FXML
-    private Button primaryButton1;
+@FXML
+private Button changeImage;
 
-    @FXML
-    private Slider sliderImage;
-    
-    @FXML
-    private ImageView imageContainer;
+@FXML
+private ImageView imageContainer;
 
-    @FXML
-    private ImageView imageContainer1;
+@FXML
+private ImageView imageContainer1;
+
+@FXML
+private Label labelList;
+
+@FXML
+private Label labelSlider;
+
+@FXML
+private TextField labelTF;
+
+@FXML
+private ListView<String> listview;
+
+@FXML
+private Button primaryButton;
+
+@FXML
+private Button primaryButton1;
+
+@FXML
+private Button primaryButton2;
+
+@FXML
+private Slider sliderImage;
     
     private Image currentImage;
+
+    
+    @FXML
+	public void initialize() { //Méthode appelé pour initialiser cette vue
+    	labelList.setVisible(false);
+    	listview.setVisible(false);
+    	sliderImage.setVisible(false);
+    	primaryButton.setVisible(false);
+    	primaryButton1.setVisible(false);
+    	changeImage.setVisible(false);
+	}
 
     @FXML
     void switchImage(MouseEvent event) throws IOException {
@@ -71,12 +101,32 @@ private File selectedDirectory;
     	            		}
     	            }
     	        }
-    	     listview.setVisible(true);
     	     listview.getItems().addAll(p);
-    	     listview.setDisable(false);
     	     listview.setVisible(true);
+    	     labelList.setVisible(true);
     	}
     }
+    
+    @FXML
+    void submitValue(ActionEvent event) {
+    	
+    }
+
+    
+    @FXML
+    void changerImage(MouseEvent event) { 
+    	imageContainer.setVisible(false);
+    	imageContainer1.setVisible(false);
+    	primaryButton1.setVisible(false);
+    	primaryButton.setVisible(false);
+    	sliderImage.setVisible(false);
+    	changeImage.setVisible(false);
+    	
+    	listview.setVisible(true);
+    }
+    
+    
+    
     //Affiche l'image correspondant au fichier sélectionner par l'utilisateur dans la listview
     @FXML
     void clickOnlistview(MouseEvent event) {
@@ -89,7 +139,13 @@ private File selectedDirectory;
 			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),listview.getSelectionModel().getSelectedItem(),0);
 			currentImage= convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
 			imageContainer.setImage(currentImage);
+			
+			primaryButton1.setVisible(true);
+			changeImage.setVisible(true);
+			imageContainer.setVisible(true);
 			sliderImage.setVisible(true);
+			 listview.setVisible(false);
+			 
 			sliderImage.setMax(Model.getInstance().dicomLoader.getNbImages()-1);
 			sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
 
@@ -117,7 +173,9 @@ private File selectedDirectory;
     	Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
     	Model.getInstance().pretraitement.BufferedImageToPixelMatrix(Model.getInstance().pretraitement.buffImg);
     	Model.getInstance().pretraitement.BufferedImageToSonogram();
+    	imageContainer1.setVisible(true);
     	imageContainer1.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
+    	primaryButton.setVisible(true);
     }
     
 

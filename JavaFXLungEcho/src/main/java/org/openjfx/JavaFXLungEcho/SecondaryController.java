@@ -1,14 +1,21 @@
 package org.openjfx.JavaFXLungEcho;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
+
+import javax.imageio.ImageIO;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -24,6 +31,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class SecondaryController {
@@ -75,30 +83,45 @@ public class SecondaryController {
 
 	// méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
 	@FXML
-	void launchZipf(MouseEvent event) {
+	void launchZipf(MouseEvent event) throws IOException {
 		Model model = Model.getInstance();
-		//LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(),new LogarithmicAxis());
-		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new NumberAxis(),new NumberAxis());
-		//zipfChart.au
+		// zipfChart.au
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, true, false);
+
+		// TEST
+		TraitementBufferedImage er = new TraitementBufferedImage();
+		BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testlena.jpg"));
+		er.BufferedImageToPixelMatrix(I);
+		// model.traitementZipf = new TraitementZipf(e.greyPixelsLevels,0,true,false);
+		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
-		int i = 0;
+		int i = 1;
+		int maxvalue = 0, maxrange = mapso.size();
 		for (Entry<String, Integer> entry : mapso.entrySet()) {
 			Integer value = entry.getValue();
-			if (i != 0) {
-				series.getData().add(new XYChart.Data<Number, Number>(value, i));
-				System.out.println("Valeur : " + value + " , i : " + i);
-			}
+			if (value > maxvalue)
+				maxvalue = value;
+
+			series.getData().add(new XYChart.Data<Number, Number>(i, value));
+			System.out.println("Valeur : " + value + " , rang : " + i);
 
 			i++;
 		}
+		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(1, maxrange-1	),
+				new LogarithmicAxis(1, maxvalue));
+		
 		zipfChart.getData().add(series);
-		mainPane.getChildren().add(zipfChart);
+		
+		
+		Stage secondStage = new Stage();
+		 StackPane root = new StackPane();
+		 root.getChildren().add(zipfChart);
+        secondStage.setScene(new Scene(root,1280,720));
+        secondStage.setTitle("Loi de zipf appliqué avec un motif "+choicebox.getValue());
+        secondStage.show();
 		model.traitementZipf.printMapValuesAndKeys(mapso);
-
 	}
 
 	// Fonction pour convertir une bufferedImage en Image JavaFX
