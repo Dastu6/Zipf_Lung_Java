@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 
 public class PrimaryController {
 	int maxImage = -1;
-	boolean isSelectingDir = false;
 	private DirectoryChooser directoryChooser;
 	private File selectedDirectory;
 	@FXML
@@ -280,8 +279,7 @@ public class PrimaryController {
 			selectedDirectory = new File(Model.getInstance().favDir);
 			if (selectedDirectory != null || selectedDirectory.exists() == true)
 				selectFileFromDirectory();
-		} else if (isSelectingDir == false) {
-			isSelectingDir = true;
+		} else  {
 			directoryChooser = new DirectoryChooser();
 			String tempFavDir;
 			if (Model.getInstance().favDir == null)
@@ -294,9 +292,8 @@ public class PrimaryController {
 				f = new File(tempFavDir);
 			}
 			directoryChooser.setInitialDirectory(f);
-			selectedDirectory = directoryChooser.showDialog(null);
+			selectedDirectory = directoryChooser.showDialog((Stage)changeImage.getScene().getWindow());
 		}
-		if (isSelectingDir == false) {
 
 			if (selectedDirectory == null) {
 				// No Directory selected
@@ -304,9 +301,7 @@ public class PrimaryController {
 				Model.getInstance().favDir = selectedDirectory.getAbsolutePath();
 				System.out.println(selectedDirectory.getAbsolutePath());
 				selectFileFromDirectory();
-				isSelectingDir = false;
 			}
-		}
 	}
 
 	// Selectionne les fichiers depuis le directory indiqué dans selectedDirectory
@@ -331,6 +326,8 @@ public class PrimaryController {
 					}
 				}
 			}
+			if(listview.getSelectionModel().getSelectedItems().isEmpty()==false)
+				listview.getItems().clear();
 			listview.getItems().addAll(p);
 			listview.setVisible(true);
 			listview.setDisable(false);
