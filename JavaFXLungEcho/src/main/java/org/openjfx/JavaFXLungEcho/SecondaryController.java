@@ -90,10 +90,12 @@ public class SecondaryController {
 
 		// TEST
 		TraitementBufferedImage er = new TraitementBufferedImage();
-		BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testlena.jpg"));
+		//BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testlena.jpg"));
+		//BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testbateau.png"));
+		BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/test_vert.png"));
 		er.BufferedImageToPixelMatrix(I);
-		// model.traitementZipf = new TraitementZipf(e.greyPixelsLevels,0,true,false);
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
+		 model.traitementZipf = new TraitementZipf(er.greyPixelsLevels,5,true,false);
+		//model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;

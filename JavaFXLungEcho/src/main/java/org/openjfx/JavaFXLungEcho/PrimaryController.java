@@ -78,11 +78,19 @@ private Slider sliderImage;
     @FXML
     void buttonCall(MouseEvent event) {
     	DirectoryChooser directoryChooser = new DirectoryChooser();
+    	String tempFavDir;
+    	if(Model.getInstance().favDir==null)
+    		tempFavDir = "src/main/resources/images";
+    	else
+    		tempFavDir = Model.getInstance().favDir;
+    	File f = new File(tempFavDir);
+    	directoryChooser.setInitialDirectory(f);
     	selectedDirectory = directoryChooser.showDialog(null);
 
     	if(selectedDirectory == null){
     	     //No Directory selected
     	}else{
+    		Model.getInstance().favDir = selectedDirectory.getAbsolutePath();
     	     System.out.println(selectedDirectory.getAbsolutePath());
     	     ArrayList<String> p = new ArrayList<String>();
     	     for (File file : selectedDirectory.listFiles()) {
@@ -138,6 +146,7 @@ private Slider sliderImage;
     	 try {
 			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),listview.getSelectionModel().getSelectedItem(),0);
 			currentImage= convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+			imageContainer.setImage(null);
 			imageContainer.setImage(currentImage);
 			
 			primaryButton1.setVisible(true);
@@ -158,6 +167,7 @@ private Slider sliderImage;
 						e.printStackTrace();
 					}
 					currentImage= convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+					imageContainer.setImage(null);
 					imageContainer.setImage(currentImage);
 				}			
 			});

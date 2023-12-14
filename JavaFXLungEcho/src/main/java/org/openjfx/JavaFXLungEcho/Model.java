@@ -39,4 +39,5 @@ public final class Model {
 	 DicomLoader dicomLoader;
 	 TraitementBufferedImage pretraitement;
 	 TraitementZipf traitementZipf;
+	public String favDir;
 }

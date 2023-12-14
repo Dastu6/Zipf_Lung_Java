@@ -1,16 +1,18 @@
 package org.openjfx.JavaFXLungEcho;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+import javax.imageio.ImageIO;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 
 
 
@@ -27,6 +29,15 @@ public class App extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+        stage.setOnCloseRequest((e) -> {
+        	try {
+				closeFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            stage.close();
+        });
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -61,6 +72,31 @@ public class App extends Application {
 
         //TraitementDicom();
         model.pretraitement = new TraitementBufferedImage();
+        
+        openFile();
         launch();
     }
+    
+    public static void openFile() throws FileNotFoundException {
+    	File f = new File("src/main/resources/favDir.txt");
+    	if(f.exists() && !f.isDirectory()) { 
+    				 Scanner myReader = new Scanner(f);
+    				 String data = null;
+    	      while (myReader.hasNextLine()) {
+    	        data = myReader.nextLine();
+    	        System.out.println(data);
+    	      }
+    	      myReader.close();
+    	      Model.getInstance().favDir = data;
+    	}
+    }
+    public static void closeFile() throws IOException {
+    	FileWriter  f = new FileWriter("src/main/resources/favDir.txt");
+    	if( f!=null ) { 
+    		 f.write(Model.getInstance().favDir);
+    	      f.close();
+    	        System.out.println("Nouveau fav directory : "+ Model.getInstance().favDir);
+    	      }
+    }
+    
 }
