@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 public class TraitementZipf {
 	public int[][] greyMatrix;
 	public int motifSize; //motif x motif
+	public int motifSizeX;
+	public int motifSizeY;
 	public int seuilPixelDifferenceDetection;
 	public int recouvrement;
 	public boolean specificOrientation;
@@ -21,9 +23,11 @@ public class TraitementZipf {
 	public HashMap<String,Integer> mapMotifNombreOccurence;
 	public HashMap<String,Integer> mapSortedCodedMotifOccurence;
 	
-	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
+	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap, int motifX, int motifY) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
+		motifSizeX = motifX;
+		motifSizeY = motifY;
 		recouvrement = 0;
 		seuilPixelDifferenceDetection = seuil;
 		specificOrientation = specifOrientation;
@@ -106,16 +110,17 @@ public class TraitementZipf {
 	public void motifMapFromGreyMatrix() {
 		int number_row = greyMatrix.length;
 		int number_col = greyMatrix[0].length;
-		int max_row_iteration = number_row/motifSize; //On va enlever les quelques pixels qui dépassent 
-		int max_col_iteration = number_col/motifSize; //pour ne pas lire dans de mauvais endroits de la mémoire
-		int corner_limit = (motifSize-1)/2; //Décide de faire le choix de prendre des motifs égaux
+		int max_row_iteration = number_row/motifSizeX; //On va enlever les quelques pixels qui dépassent 
+		int max_col_iteration = number_col/motifSizeY; //pour ne pas lire dans de mauvais endroits de la mémoire
+		int corner_limitX = (motifSizeX-1)/2; //On rogne l'image pour être sûr que chaque pixel parcouru puisse être traité
+		int corner_limitY = (motifSizeY-1)/2;
 		//mais qui ne recouvrent pas entièrement l'image
-		for (int i = corner_limit; i < max_row_iteration; i++) {
-			for (int j = corner_limit; j < max_col_iteration; j++) { //Pour chaque pixel on va maintenant regarder son voisinage
-				int[] listMotif = new int[motifSize * motifSize];
+		for (int i = corner_limitX; i < max_row_iteration; i++) {
+			for (int j = corner_limitY; j < max_col_iteration; j++) { //Pour chaque pixel on va maintenant regarder son voisinage
+				int[] listMotif = new int[motifSizeX * motifSizeY];
 				int count = 0;
-				for (int ki = i-corner_limit; ki <= i+corner_limit; ki++) {
-					for (int kj = j-corner_limit; kj <= j+corner_limit; kj++) {
+				for (int ki = i-corner_limitX; ki <= i+corner_limitX; ki++) {
+					for (int kj = j-corner_limitY; kj <= j+corner_limitY; kj++) {
 						listMotif[count] = greyMatrix[ki][kj];
 						count++;
 					}

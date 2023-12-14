@@ -84,6 +84,11 @@ private Slider sliderImage;
     	else
     		tempFavDir = Model.getInstance().favDir;
     	File f = new File(tempFavDir);
+    	if(f.exists()==false)
+    	{
+    		tempFavDir = "src/main/resources/images";
+    		f = new File(tempFavDir);
+    	}
     	directoryChooser.setInitialDirectory(f);
     	selectedDirectory = directoryChooser.showDialog(null);
 
