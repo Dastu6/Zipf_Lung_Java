@@ -58,6 +58,9 @@ public class SecondaryController {
 
 	@FXML
 	private VBox mainPane;
+	
+	@FXML
+	private Button backToImageSelectionButton;
 
 	@FXML
 	public void initialize() {
@@ -140,7 +143,14 @@ public class SecondaryController {
 		System.out.println(choicebox.getValue());
 		System.out.println("x : " + motifs[0] + "; y : " + motifs[1]);
 	}
-
+	
+	@FXML
+    void goToPreviousScene(MouseEvent event) throws IOException {
+		App.setRoot("primary");
+		System.out.println("MDRR");
+    }
+	
+	
 	// Fonction pour convertir une bufferedImage en Image JavaFX
 	private Image convertToFxImage(BufferedImage image) {
 		WritableImage wr = null;

@@ -17,6 +17,7 @@
       <ChoiceBox fx:id="choiceboxRecouvrement" prefWidth="150.0" />
       <ImageView fx:id="imageViewer" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
         <Button fx:id="secondaryButton" onMouseClicked="#launchZipf" text="Lancer le traitement pour la loi de Zipf" />
+      <Button fx:id="backToImageSelectionButton" mnemonicParsing="false" onMouseClicked="#goToPreviousScene" text="Retourner à la sélection de l'image" />
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
