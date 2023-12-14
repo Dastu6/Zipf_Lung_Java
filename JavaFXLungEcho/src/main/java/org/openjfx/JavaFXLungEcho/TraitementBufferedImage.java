@@ -52,11 +52,12 @@ public class TraitementBufferedImage {
 	}
 	
 	//Fonction qui va calculer la pente entre (x1,y1) et (x2,y2)
-	public float slope(int x1, int y1, int x2, int y2) {
-		if (x2 - x1 != 0) {
-			return (y2-y1)/(x2-x1);
+	public float slope(int x1, int y1, int x2, int y2) throws IllegalArgumentException{
+		if (x2 == x1) {
+			throw new IllegalArgumentException("Slope method can't take similar X values");
 		}
-		return Integer.MAX_VALUE; //Permet de check facilement si le calcul a pu se faire ou non
+		float p = (float)(y2-y1)/(float)(x2-x1);
+		return p;
 	}
 	
 	//Fonction qui va créer un nouveau fichier PNG pour ne garder que la zone de l'échographie
@@ -111,33 +112,48 @@ public class TraitementBufferedImage {
 		//Courbe du bas droite : ( , ) -> ( , )
 		//Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega,newHeight,midWidth,h0); //On part du point le plus à gauche
-		float penteDroite = slope(dOmega,newHeight,z,h0); //On part du point le plus à gauche
+		float penteDroite = slope(z,h0,dOmega,newHeight); //On part du point le plus à gauche
 		//float penteGauche = slope(midWidth,h0,gOmega,newHeight);
-		
+
 		//On a la liste de tous les points qui sont sur la pente gauche
-		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> aG0 = new ArrayList<Integer>(2);
-		aG0.add(gOmega); aG0.add(h0); 
-		pointsPenteGauche.add(aG0);
-		int prevGX = gOmega; int prevGY = h0;
+		ArrayList<ArrayList<Float>> pointsPenteGaucheTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aG0 = new ArrayList<Float>(2);
+		aG0.add((float)gOmega); aG0.add((float)newHeight); 
+		pointsPenteGaucheTemp.add(aG0);
+		float prevGX = gOmega; float prevGY = newHeight;
 		for (int x = 1; x < (int)midWidth-gOmega; x++) {
-			ArrayList<Integer> a = new ArrayList<Integer>(2);
-			a.add(prevGX+1); a.add((int)(prevGY-penteGauche));
-			pointsPenteGauche.add(a);
-			prevGX += 1; prevGY = (int)(prevGY+penteGauche);
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			a.add(prevGX+1); a.add((float) (prevGY+penteGauche));
+			pointsPenteGaucheTemp.add(a);
+			prevGX += 1; prevGY = (float) (prevGY+penteGauche);
+		}
+		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Float> aGTemp : pointsPenteGaucheTemp) {
+			ArrayList<Integer> aG = new ArrayList<Integer>(2);
+			float aGX = aGTemp.get(0); float aGY = aGTemp.get(1);
+			aG.add((int)aGX); aG.add((int)aGY);
+			pointsPenteGauche.add(aG);
 		}
 		
-		//On a la liste de tous les points qui sont sur la pente droite
+		//On va créer une liste temporaire de flotants car la pente est un float
+		ArrayList<ArrayList<Float>> pointsPenteDroiteTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aD0 = new ArrayList<Float>(2);
+		aD0.add((float)z); aD0.add((float)h0); 
+		pointsPenteDroiteTemp.add(aD0);
+		float prevDX = z; float prevDY = h0;
+		for (int x = 1; x < (int)dOmega-z; x++) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			a.add(prevDX+1); a.add((float)(prevDY+penteDroite));
+			pointsPenteDroiteTemp.add(a);
+			prevDX += 1; prevDY = (float)(prevDY+penteDroite);
+		}
+		//On va maintenant faire la vraie liste des points où on va recast en int car pixel : (int x, int y)
 		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
-		ArrayList<Integer> aD0 = new ArrayList<Integer>(2);
-		aD0.add(dOmega); aD0.add(h0); 
-		pointsPenteDroite.add(aD0);
-		int prevDX = dOmega; int prevDY = h0;
-		for (int x = 1; x < (int)z-dOmega; x++) {
-			ArrayList<Integer> a = new ArrayList<Integer>(2);
-			a.add(prevDX+1); a.add((int)(prevDY-penteDroite));
-			pointsPenteDroite.add(a);
-			prevDX += 1; prevDY = (int)(prevDY+penteDroite);
+		for (ArrayList<Float> aDTemp : pointsPenteDroiteTemp) {
+			ArrayList<Integer> aD = new ArrayList<Integer>(2);
+			float aDX = aDTemp.get(0); float aDY = aDTemp.get(1);
+			aD.add((int)aDX); aD.add((int)aDY);
+			pointsPenteDroite.add(aD);
 		}
 		
 		//Etape 6 : calcul de la nouvelle image 
@@ -157,12 +173,11 @@ public class TraitementBufferedImage {
 					ArrayList<Integer> point = new ArrayList<Integer>(2); //Le point actuel
 					point.add(j);
 					point.add(i);
-					//if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point)) {
-					/*if (j == gOmega) {
+					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point)) {
 						greyRGBColor = new Color(255, 0, 0);
 						greyRGB = greyRGBColor.getRGB();
 						System.out.println(greyMatrixOnlySonogram[i_sono][j_sono]);
-					}*/
+					}
 					echographyImg.setRGB(j_sono ,i_sono , greyRGB);
 				}
 			}
