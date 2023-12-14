@@ -1,6 +1,7 @@
 package org.openjfx.JavaFXLungEcho;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.awt.Color;
 
 public class TraitementBufferedImage {
@@ -50,6 +51,14 @@ public class TraitementBufferedImage {
 		return false;
 	}
 	
+	//Fonction qui va calculer la pente entre (x1,y1) et (x2,y2)
+	public float slope(int x1, int y1, int x2, int y2) {
+		if (x2 - x1 != 0) {
+			return (y2-y1)/(x2-x1);
+		}
+		return Integer.MAX_VALUE; //Permet de check facilement si le calcul a pu se faire ou non
+	}
+	
 	//Fonction qui va créer un nouveau fichier PNG pour ne garder que la zone de l'échographie
 	//Cette fonction améliore également le contraste de l'échographie
 	public void BufferedImageToSonogram() {
@@ -94,9 +103,44 @@ public class TraitementBufferedImage {
 			h2--;
 		}
 		
-		//Etape 6 : calcul de la nouvelle image 
+		
+		//Etape P : On va calculer les pentes et contours
+		int z = dOmega + gOmega - midWidth + 1;
 		int newWidth = dOmega - gOmega + 1;
 		int newHeight = h2 - h0 + 1;
+		//Courbe du bas droite : ( , ) -> ( , )
+		//Courbe du bas gauche : ( , ) -> ( , )
+		float penteGauche = slope(gOmega,newHeight,midWidth,h0); //On part du point le plus à gauche
+		float penteDroite = slope(dOmega,newHeight,z,h0); //On part du point le plus à gauche
+		//float penteGauche = slope(midWidth,h0,gOmega,newHeight);
+		
+		//On a la liste de tous les points qui sont sur la pente gauche
+		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Integer> aG0 = new ArrayList<Integer>(2);
+		aG0.add(gOmega); aG0.add(h0); 
+		pointsPenteGauche.add(aG0);
+		int prevGX = gOmega; int prevGY = h0;
+		for (int x = 1; x < (int)midWidth-gOmega; x++) {
+			ArrayList<Integer> a = new ArrayList<Integer>(2);
+			a.add(prevGX+1); a.add((int)(prevGY-penteGauche));
+			pointsPenteGauche.add(a);
+			prevGX += 1; prevGY = (int)(prevGY+penteGauche);
+		}
+		
+		//On a la liste de tous les points qui sont sur la pente droite
+		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
+		ArrayList<Integer> aD0 = new ArrayList<Integer>(2);
+		aD0.add(dOmega); aD0.add(h0); 
+		pointsPenteDroite.add(aD0);
+		int prevDX = dOmega; int prevDY = h0;
+		for (int x = 1; x < (int)z-dOmega; x++) {
+			ArrayList<Integer> a = new ArrayList<Integer>(2);
+			a.add(prevDX+1); a.add((int)(prevDY-penteDroite));
+			pointsPenteDroite.add(a);
+			prevDX += 1; prevDY = (int)(prevDY+penteDroite);
+		}
+		
+		//Etape 6 : calcul de la nouvelle image 
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
 		int i_sono = 0;
 		int j_sono = 0;
@@ -109,6 +153,16 @@ public class TraitementBufferedImage {
 					greyMatrixOnlySonogram[i_sono][j_sono] = greyPixelsLevels[i][j];
 					Color greyRGBColor = new Color(greyMatrixOnlySonogram[i_sono][j_sono],greyMatrixOnlySonogram[i_sono][j_sono],greyMatrixOnlySonogram[i_sono][j_sono]);
 					int greyRGB = greyRGBColor.getRGB();
+					//Si l'image est dans les points de l'échographie 
+					ArrayList<Integer> point = new ArrayList<Integer>(2); //Le point actuel
+					point.add(j);
+					point.add(i);
+					//if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point)) {
+					/*if (j == gOmega) {
+						greyRGBColor = new Color(255, 0, 0);
+						greyRGB = greyRGBColor.getRGB();
+						System.out.println(greyMatrixOnlySonogram[i_sono][j_sono]);
+					}*/
 					echographyImg.setRGB(j_sono ,i_sono , greyRGB);
 				}
 			}
