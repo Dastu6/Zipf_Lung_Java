@@ -25,6 +25,14 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+/**
+ * @author scizz
+ *
+ */
+/**
+ * @author scizz
+ *
+ */
 public class PrimaryController {
 	int maxImage = -1;
 	private DirectoryChooser directoryChooser;
@@ -69,7 +77,7 @@ public class PrimaryController {
 	private Image postImage;
 
 	@FXML
-	public void initialize() { // Méthode appelé pour initialiser cette vue
+	public void initialize() throws IOException { // Méthode appelé pour initialiser cette vue
 		labelList.setDisable(true);
 		labelList.setVisible(false);
 		listview.setDisable(true);
@@ -87,84 +95,13 @@ public class PrimaryController {
 		labelSlider.setVisible(false);
 		if (Model.getInstance().favDir != null)
 			selectDirectory(true);
-	}
-
-	@FXML
-	void switchImage(MouseEvent event) throws IOException {
-		App.setRoot("secondary");
-	}
-
-	@FXML
-	void buttonCall(MouseEvent event) {
-		selectDirectory(false);
-	}
-
-	@FXML
-	void submitValue(ActionEvent event) throws IOException {
-		int value = Integer.parseInt(sliderTextField.getText());
-		System.out.println(maxImage);
-		if (value >= 0 && value <= maxImage) {
-			sliderImage.setValue(value);
-			Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
-					.chargeImageDicomBufferise(value);
-			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
-			imageContainer.setImage(null);
-			imageContainer.setImage(currentImage);
-		} else {
-			sliderTextField.setText(null);
-		}
-		sliderTextField.prefColumnCountProperty().bind(sliderTextField.textProperty().length());
-	}
-
-	@FXML // Utiliser quand on veut changer d'image
-	void changerImage(MouseEvent event) {
-		imageContainer.setVisible(false);
-		imageContainer.setDisable(true);
-		imageContainer1.setVisible(false);
-		imageContainer1.setDisable(true);
-		imageSelectionButton.setDisable(true);
-		imageSelectionButton.setVisible(false);
-		traitementImageButton.setDisable(true);
-		traitementImageButton.setVisible(false);
-		sliderImage.setVisible(false);
-		sliderImage.setDisable(true);
-		labelSlider.setVisible(false);
-		sliderTextField.setVisible(false);
-		sliderTextField.setDisable(true);
-		changeImage.setVisible(false);
-		sliderImage.setDisable(true);
-		changeImage.setDisable(true);
-
-		listview.setVisible(true);
-		listview.setDisable(false);
-
-		selectDirButton.setVisible(true);
-		selectDirButton.setDisable(false);
-		selectFileButton.setVisible(true);
-		selectFileButton.setDisable(false);
-		labelList.setVisible(true);
-		
-	}
-
-	// Affiche l'image correspondant au fichier sélectionner par l'utilisateur dans
-	// la listview
-	@FXML
-	void clickOnlistview(MouseEvent event) {
-		String imagename = listview.getSelectionModel().getSelectedItem();
-		System.out.println("clicked on " + imagename);
-		System.out.println("dirPath : " + selectedDirectory.getAbsolutePath());
-		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
-		System.out.println(imagePath);
-		try {
-			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),
-					listview.getSelectionModel().getSelectedItem(), 0);
-			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
-			imageContainer.setImage(null);
-			imageContainer.setImage(currentImage);
+		if (Model.getInstance().dicomLoader != null) {
+			selectDirectory(true);
 
 			traitementImageButton.setVisible(true);
 			traitementImageButton.setDisable(false);
 			changeImage.setVisible(true);
+			changeImage.setDisable(false);
 			imageContainer.setVisible(true);
 			imageContainer.setDisable(false);
 			sliderImage.setVisible(true);
@@ -203,6 +140,127 @@ public class PrimaryController {
 					labelSlider.setVisible(true);
 				}
 			});
+			if (Model.getInstance().photoNumber != -1) {
+				changeImageSliderValue(Model.getInstance().photoNumber);
+				imageContainer1.setVisible(true);
+				imageContainer1.setDisable(false);
+				postImage = convertToFxImage(Model.getInstance().pretraitement.echographyImg);
+				imageContainer1.setImage(postImage);
+				imageSelectionButton.setVisible(true);
+				imageSelectionButton.setDisable(false);
+			}
+
+		}
+
+	}
+
+	@FXML
+	void switchImage(MouseEvent event) throws IOException {
+		App.setRoot("secondary");
+		Model.getInstance().photoNumber = (int) sliderImage.getValue();
+	}
+
+	@FXML
+	void buttonCall(MouseEvent event) {
+		selectDirectory(false);
+	}
+
+	@FXML
+	void submitValue(ActionEvent event) throws IOException {
+		int value = Integer.parseInt(sliderTextField.getText());
+		changeImageSliderValue(value);
+	}
+
+	@FXML // Utiliser quand on veut changer d'image
+	void changerImage(MouseEvent event) {
+		imageContainer.setVisible(false);
+		imageContainer.setDisable(true);
+		imageContainer1.setVisible(false);
+		imageContainer1.setDisable(true);
+		imageSelectionButton.setDisable(true);
+		imageSelectionButton.setVisible(false);
+		traitementImageButton.setDisable(true);
+		traitementImageButton.setVisible(false);
+		sliderImage.setVisible(false);
+		sliderImage.setDisable(true);
+		labelSlider.setVisible(false);
+		sliderTextField.setVisible(false);
+		sliderTextField.setDisable(true);
+		changeImage.setVisible(false);
+		sliderImage.setDisable(true);
+		changeImage.setDisable(true);
+
+		listview.setVisible(true);
+		listview.setDisable(false);
+
+		selectDirButton.setVisible(true);
+		selectDirButton.setDisable(false);
+		selectFileButton.setVisible(true);
+		selectFileButton.setDisable(false);
+		labelList.setVisible(true);
+
+	}
+
+	// Affiche l'image correspondant au fichier sélectionner par l'utilisateur dans
+	// la listview
+	@FXML
+	void clickOnlistview(MouseEvent event) {
+		String imagename = listview.getSelectionModel().getSelectedItem();
+		System.out.println("clicked on " + imagename);
+		System.out.println("dirPath : " + selectedDirectory.getAbsolutePath());
+		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
+		System.out.println(imagePath);
+		try {
+			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),
+					listview.getSelectionModel().getSelectedItem(), 0);
+			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+			imageContainer.setImage(null);
+			imageContainer.setImage(currentImage);
+			traitementImageButton.setVisible(true);
+			traitementImageButton.setDisable(false);
+			changeImage.setVisible(true);
+			changeImage.setDisable(false);
+			imageContainer.setVisible(true);
+			imageContainer.setDisable(false);
+			sliderImage.setVisible(true);
+			sliderImage.setDisable(false);
+			listview.setVisible(false);
+
+			maxImage = Model.getInstance().dicomLoader.getNbImages() - 1;
+			sliderImage.setMax(maxImage);
+			sliderImage.setValue(0);
+			sliderTextField.setText("0");
+			sliderTextField.setVisible(true);
+			sliderTextField.setDisable(false);
+			selectDirButton.setVisible(false);
+			selectDirButton.setDisable(true);
+			selectFileButton.setVisible(false);
+			selectFileButton.setDisable(true);
+			labelList.setVisible(false);
+			labelSlider.setText("/" + maxImage);
+			this.sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Number> observable, Number oldNumber, Number newNumber) {
+					try {
+						sliderImage.setValue(newNumber.intValue());
+						int value = (int) sliderImage.getValue();
+						Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
+								.chargeImageDicomBufferise(value);
+						sliderTextField.setText(Integer.toString(value));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+					imageContainer.setImage(null);
+					imageContainer.setImage(currentImage);
+					imageContainer1.setVisible(true);
+					imageContainer1.setDisable(false);
+					labelSlider.setVisible(true);
+				}
+			});
+			
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -216,7 +274,7 @@ public class PrimaryController {
 		StackPane root = new StackPane();
 		ImageView temp = new ImageView(currentImage);
 		root.getChildren().add(temp);
-		Scene scene = new Scene(root,1280, 720);
+		Scene scene = new Scene(root, 1280, 720);
 		stage.setScene(scene);
 		stage.setResizable(false);
 		stage.setTitle("Image en prétraitement");
@@ -239,13 +297,14 @@ public class PrimaryController {
 	@FXML
 	void cutImage(MouseEvent event) {
 		Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
-		Model.getInstance().pretraitement.BufferedImageToPixelMatrix(Model.getInstance().pretraitement.buffImg);
+		Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(Model.getInstance().pretraitement.buffImg);
 		Model.getInstance().pretraitement.BufferedImageToSonogram();
 		imageContainer1.setVisible(true);
 		imageContainer1.setDisable(false);
 		postImage = convertToFxImage(Model.getInstance().pretraitement.echographyImg);
 		imageContainer1.setImage(postImage);
 		imageSelectionButton.setVisible(true);
+		imageSelectionButton.setDisable(false);
 	}
 
 	@FXML
@@ -279,7 +338,7 @@ public class PrimaryController {
 			selectedDirectory = new File(Model.getInstance().favDir);
 			if (selectedDirectory != null || selectedDirectory.exists() == true)
 				selectFileFromDirectory();
-		} else  {
+		} else {
 			directoryChooser = new DirectoryChooser();
 			String tempFavDir;
 			if (Model.getInstance().favDir == null)
@@ -292,16 +351,16 @@ public class PrimaryController {
 				f = new File(tempFavDir);
 			}
 			directoryChooser.setInitialDirectory(f);
-			selectedDirectory = directoryChooser.showDialog((Stage)changeImage.getScene().getWindow());
+			selectedDirectory = directoryChooser.showDialog((Stage) changeImage.getScene().getWindow());
 		}
 
-			if (selectedDirectory == null) {
-				// No Directory selected
-			} else {
-				Model.getInstance().favDir = selectedDirectory.getAbsolutePath();
-				System.out.println(selectedDirectory.getAbsolutePath());
-				selectFileFromDirectory();
-			}
+		if (selectedDirectory == null) {
+			// No Directory selected
+		} else {
+			Model.getInstance().favDir = selectedDirectory.getAbsolutePath();
+			System.out.println(selectedDirectory.getAbsolutePath());
+			selectFileFromDirectory();
+		}
 	}
 
 	// Selectionne les fichiers depuis le directory indiqué dans selectedDirectory
@@ -326,7 +385,7 @@ public class PrimaryController {
 					}
 				}
 			}
-			if(listview.getSelectionModel().getSelectedItems().isEmpty()==false)
+			if (listview.getSelectionModel().getSelectedItems().isEmpty() == false)
 				listview.getItems().clear();
 			listview.getItems().addAll(p);
 			listview.setVisible(true);
@@ -336,5 +395,22 @@ public class PrimaryController {
 					+ selectedDirectory.getAbsolutePath());
 			labelList.setDisable(false);
 		}
+	}
+
+	//Change the image printed on screen based on the value of the slider
+	void changeImageSliderValue(int newImageValue) throws IOException {
+		System.out.println(maxImage);
+		if (newImageValue >= 0 && newImageValue <= maxImage) {
+			sliderImage.setValue(newImageValue);
+			Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
+					.chargeImageDicomBufferise(newImageValue);
+			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+			imageContainer.setImage(null);
+			imageContainer.setImage(currentImage);
+		} else {
+			sliderTextField.setText(null);
+		}
+		sliderTextField.prefColumnCountProperty().bind(sliderTextField.textProperty().length());
+
 	}
 }
