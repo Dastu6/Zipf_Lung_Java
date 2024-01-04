@@ -40,13 +40,26 @@ public class TraitementBufferedImage {
 	}
 	
 	//Fonction qui va regarder si un pixel d'une matrice possède un pixel non nul au dessus de lui
-	public boolean pixelHasNonBlackPixelAbove(int[][] matrix, int x, int y) {
+	public boolean pixelHasBlackPixelAbove(int[][] matrix, int x, int y) throws IllegalArgumentException{
 		int row = y;
-		while (row > 1) {
-			if (greyPixelsLevels[row][x] != 2*minimumGreyIntensityBeforeTreatment) {
+		if (row < 1 || x < 0) {
+			throw new IllegalArgumentException("Trying to check for a pixel that doesn't exist");
+		}
+		//while (row > 1) {
+			if (matrix[row-1][x] <= seuil_detect_debut) {
 				return true;
 			}
-			row--;
+			//row--;
+		//}
+		return false;
+	}
+	
+	public boolean pixelHasBlackPixelBelow(int[][] matrix, int x, int y) throws IllegalArgumentException{
+		if (y < 1 || x < 0) {
+			throw new IllegalArgumentException("Trying to check for a pixel that doesn't exist");
+		}
+		if (matrix[y+1][x] <= 2*minimumGreyIntensityBeforeTreatment) {
+			return true;
 		}
 		return false;
 	}
@@ -113,8 +126,9 @@ public class TraitementBufferedImage {
 		//Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega,newHeight,midWidth,h0); //On part du point le plus à gauche
 		float penteDroite = slope(z,h0,dOmega,newHeight); //On part du point le plus à gauche
-		//float penteGauche = slope(midWidth,h0,gOmega,newHeight);
 
+		/////////////////PENTES///////////////////////::
+		
 		//On a la liste de tous les points qui sont sur la pente gauche
 		ArrayList<ArrayList<Float>> pointsPenteGaucheTemp = new ArrayList<ArrayList<Float>>();
 		ArrayList<Float> aG0 = new ArrayList<Float>(2);
@@ -156,6 +170,108 @@ public class TraitementBufferedImage {
 			pointsPenteDroite.add(aD);
 		}
 		
+		///////////////////COURBES///////////////////////////////
+		
+		//On va calculer la courbe haute de la zone de l'échographie : d'abord partie gauche puis droite
+		ArrayList<ArrayList<Float>> pointsCourbeHauteGaucheTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aHG0 = new ArrayList<Float>(2); //Point gauche pente haute
+		aHG0.add((float)midWidth); aHG0.add((float)h0);
+		pointsCourbeHauteGaucheTemp.add(aHG0); 
+		float prevHGX = midWidth; float prevHGY = h0;
+		for (int x = 1; x < (int)((z-midWidth)/2); x++) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			int countX = 1;
+			int countY = 0;
+			//On va se décaler d'un vers la droite en abscisse et tant qu'il y a un pixel nul au dessus on descend d'un en ordonée
+			//Puis une fois que le pixel au dessus est non nul, on conserve ce pixel là
+			while (greyPixelsLevels[(int)prevHGY+countY][(int)prevHGX+countX] <= seuil_detect_debut) {
+				countY++;
+			}
+			a.add(prevHGX+countX); a.add(prevHGY+countY);
+			pointsCourbeHauteGaucheTemp.add(a);
+			prevHGX+=countX; prevHGY+=countY;
+		}
+				
+		ArrayList<ArrayList<Float>> pointsCourbeHauteDroiteTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aHD0 = new ArrayList<Float>(2);
+		aHD0.add((float)z); aHD0.add((float)h0);
+		pointsCourbeHauteDroiteTemp.add(aHD0);
+		float prevHDX = z; float prevHDY = h0;
+		while (prevHDX>prevHGX) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			int countX = 1;
+			int countY = 0;
+			while (greyPixelsLevels[(int)prevHDY+countY][(int)prevHDX-countX] <= seuil_detect_debut) {
+				countY++;
+			}
+			a.add(prevHDX-countX); a.add(prevHDY+countY);
+			pointsCourbeHauteDroiteTemp.add(a);
+			prevHDX-=countX; prevHDY+=countY;
+		}
+		
+		ArrayList<ArrayList<Integer>> pointsCourbeHaute = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Float> aHGTemp : pointsCourbeHauteGaucheTemp) {
+			ArrayList<Integer> aHG = new ArrayList<Integer>(2);
+			float aHGX = aHGTemp.get(0); float aHGY = aHGTemp.get(1);
+			aHG.add((int)aHGX); aHG.add((int)aHGY);
+			pointsCourbeHaute.add(aHG);
+		}
+		for (ArrayList<Float> aHDTemp : pointsCourbeHauteDroiteTemp) {
+			ArrayList<Integer> aHD = new ArrayList<Integer>(2);
+			float aHDX = aHDTemp.get(0); float aHDY = aHDTemp.get(1);
+			aHD.add((int)aHDX); aHD.add((int)aHDY);
+			pointsCourbeHaute.add(aHD);
+		}
+		
+		ArrayList<ArrayList<Float>> pointsCourbeBasseGaucheTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aBG0 = new ArrayList<Float>(2);
+		aBG0.add((float)gOmega); aBG0.add((float)newHeight);
+		pointsCourbeBasseGaucheTemp.add(aBG0);
+		float prevBGX = gOmega; float prevBGY = newHeight;
+		while(prevBGX<midWidth) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			int countX = 1;
+			int countY = 0;
+			while (greyPixelsLevels[(int)prevBGY+countY][(int)prevBGX+countX] > seuil_detect_debut) {
+				countY++;
+			}
+			a.add(prevBGX+countX); a.add(prevBGY+countY);
+			pointsCourbeBasseGaucheTemp.add(a);
+			prevBGX+=countX; prevBGY+=countY;
+		}
+		
+		ArrayList<ArrayList<Float>> pointsCourbeBasseDroiteTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aBD0 = new ArrayList<Float>(2);
+		aBD0.add((float)dOmega); aBD0.add((float)newHeight);
+		pointsCourbeBasseDroiteTemp.add(aBD0);
+		float prevBDX = dOmega; float prevBDY = newHeight;
+		int limit = midWidth+(int)((z-midWidth)/2);
+		while(prevBDX>limit) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			int countX = 1;
+			int countY = 0;
+			while (greyPixelsLevels[(int)prevBDY+countY][(int)prevBDX-countX] > seuil_detect_debut) {
+				countY++;
+			}
+			a.add(prevBDX-countX); a.add(prevBDY+countY);
+			pointsCourbeBasseDroiteTemp.add(a);
+			prevBDX-=countX; prevBDY+=countY;
+		}		
+		
+		ArrayList<ArrayList<Integer>> pointsCourbeBasse = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Float> aBGTemp : pointsCourbeBasseGaucheTemp) {
+			ArrayList<Integer> aBG = new ArrayList<Integer>(2);
+			float aBGX = aBGTemp.get(0); float aBGY = aBGTemp.get(1);
+			aBG.add((int)aBGX); aBG.add((int)aBGY);
+			pointsCourbeBasse.add(aBG);
+		}
+		for (ArrayList<Float> aBDTemp : pointsCourbeBasseDroiteTemp) {
+			ArrayList<Integer> aBD = new ArrayList<Integer>(2);
+			float aBDX = aBDTemp.get(0); float aBDY = aBDTemp.get(1);
+			aBD.add((int)aBDX); aBD.add((int)aBDY);
+			pointsCourbeBasse.add(aBD);
+		}
+		
 		//Etape 6 : calcul de la nouvelle image 
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
 		int i_sono = 0;
@@ -173,7 +289,7 @@ public class TraitementBufferedImage {
 					ArrayList<Integer> point = new ArrayList<Integer>(2); //Le point actuel
 					point.add(j);
 					point.add(i);
-					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point)) {
+					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point) || pointsCourbeHaute.contains(point) || pointsCourbeBasse.contains(point)) {
 						greyRGBColor = new Color(255, 0, 0);
 						greyRGB = greyRGBColor.getRGB();
 						System.out.println(greyMatrixOnlySonogram[i_sono][j_sono]);
