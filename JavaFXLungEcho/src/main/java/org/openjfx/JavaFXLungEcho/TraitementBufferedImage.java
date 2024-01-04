@@ -1,8 +1,8 @@
 package org.openjfx.JavaFXLungEcho;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.awt.Color;
 
 public class TraitementBufferedImage {
 	public BufferedImage buffImg;
@@ -16,7 +16,21 @@ public class TraitementBufferedImage {
 	public TraitementBufferedImage() {
 		
 	}
-	
+	//Fonction qui va permettre de stocker la matrice de pixels d'une des frames de l'image dicom
+	//à la différence de l'autre celle-ci parallélise le calcul via des thread
+	public void ThreadBuffImagetoPixelMatrix(BufferedImage bufferImg)
+	{
+		int widthImg = bufferImg.getWidth();
+		int heightImg = bufferImg.getHeight();
+		greyPixelsLevels = new int[heightImg][widthImg];
+		int min = 256;
+		int nbThread = Model.getInstance().nbThread;
+		for(int i=0;i<nbThread;i++)
+		{
+			 ThreadTraitementImage temp = new ThreadTraitementImage(greyPixelsLevels, nbThread, bufferImg, i);
+			 temp.run();
+		}
+	}
 	//Fonction qui va permettre de stocker la matrice de pixels d'une des frames de l'image dicom
 	public void BufferedImageToPixelMatrix(BufferedImage bufferImg) {
 		int widthImg = bufferImg.getWidth();
@@ -59,6 +73,16 @@ public class TraitementBufferedImage {
 		float p = (float)(y2-y1)/(float)(x2-x1);
 		return p;
 	}
+	
+	
+	
+	public void ThreadBufferedImageToSonogram() {
+		
+	}
+	
+	
+	
+	
 	
 	//Fonction qui va créer un nouveau fichier PNG pour ne garder que la zone de l'échographie
 	//Cette fonction améliore également le contraste de l'échographie
@@ -158,9 +182,22 @@ public class TraitementBufferedImage {
 		
 		//Etape 6 : calcul de la nouvelle image 
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
+		echographyImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+		
+		 long startTime = System.nanoTime();
+		
+		int nbThread = Model.getInstance().nbThread;
+		for(int i=0;i<nbThread;i++)
+		{
+			 ThreadSonoTraitementImage temp = new ThreadSonoTraitementImage
+					 (nbThread, i, echographyImg,greyMatrixOnlySonogram,greyPixelsLevels,
+							 pointsPenteGauche,pointsPenteDroite,h0,gOmega,dOmega,h2);
+			 temp.run();
+		}
+		 /*
 		int i_sono = 0;
 		int j_sono = 0;
-		echographyImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+		
 		for (int i = 0; i < oldHeight; i++) {
 			for (int j = 0; j < oldWidth - 1; j++) {
 				if (j >= gOmega && j <= dOmega && i >= h0 && i <= h2) { //on est dans la zone de l'echographie
@@ -182,5 +219,16 @@ public class TraitementBufferedImage {
 				}
 			}
 		}
+		*/
+		
+		
+		 long endTime = System.nanoTime();
+		 
+	        // obtenir la différence entre les deux valeurs de temps nano
+	        long timeElapsed = endTime - startTime;
+	        long milliTimeElapsed = timeElapsed / 1000000;
+	      
+	        System.out.println("Execution time in milliseconds: " + milliTimeElapsed);
+	        System.out.println("Execution time in seconds : " + milliTimeElapsed / 1000);
 	}
 }
