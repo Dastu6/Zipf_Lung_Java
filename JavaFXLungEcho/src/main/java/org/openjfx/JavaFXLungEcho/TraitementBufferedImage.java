@@ -307,36 +307,9 @@ public class TraitementBufferedImage {
 		{
 			 ThreadSonoTraitementImage temp = new ThreadSonoTraitementImage
 					 (nbThread, i, echographyImg,greyMatrixOnlySonogram,greyPixelsLevels,
-							 pointsPenteGauche,pointsPenteDroite,h0,gOmega,dOmega,h2);
+							 pointsPenteGauche,pointsPenteDroite,pointsCourbeHaute,pointsCourbeBasse,h0,gOmega,dOmega,h2);
 			 temp.run();
 		}
-		 /*
-		int i_sono = 0;
-		int j_sono = 0;
-		
-		for (int i = 0; i < oldHeight; i++) {
-			for (int j = 0; j < oldWidth - 1; j++) {
-				if (j >= gOmega && j <= dOmega && i >= h0 && i <= h2) { //on est dans la zone de l'echographie
-					i_sono = i - h0;
-					j_sono = j - gOmega;
-					greyMatrixOnlySonogram[i_sono][j_sono] = greyPixelsLevels[i][j];
-					Color greyRGBColor = new Color(greyMatrixOnlySonogram[i_sono][j_sono],greyMatrixOnlySonogram[i_sono][j_sono],greyMatrixOnlySonogram[i_sono][j_sono]);
-					int greyRGB = greyRGBColor.getRGB();
-					//Si l'image est dans les points de l'échographie 
-					ArrayList<Integer> point = new ArrayList<Integer>(2); //Le point actuel
-					point.add(j);
-					point.add(i);
-					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point) || pointsCourbeHaute.contains(point) || pointsCourbeBasse.contains(point)) {
-						greyRGBColor = new Color(255, 0, 0);
-						greyRGB = greyRGBColor.getRGB();
-						System.out.println(greyMatrixOnlySonogram[i_sono][j_sono]);
-					}
-					echographyImg.setRGB(j_sono ,i_sono , greyRGB);
-				}
-			}
-		}
-		*/
-		
 		
 		 long endTime = System.nanoTime();
 		 

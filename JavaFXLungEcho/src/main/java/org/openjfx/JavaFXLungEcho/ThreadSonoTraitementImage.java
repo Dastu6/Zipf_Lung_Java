@@ -20,7 +20,8 @@ public class ThreadSonoTraitementImage implements Runnable {
 
 	private ArrayList<ArrayList<Integer>> pointsPenteGauche;
 	private ArrayList<ArrayList<Integer>> pointsPenteDroite;
-
+	private ArrayList<ArrayList<Integer>> pointsCourbeHaute;
+	private ArrayList<ArrayList<Integer>> pointsCourbeBasse;
 	private int h0;
 	private int gOmega;
 	private int dOmega;
@@ -28,7 +29,7 @@ public class ThreadSonoTraitementImage implements Runnable {
 
 	public ThreadSonoTraitementImage(int maxThread, int nbThread, BufferedImage newImage, int[][] newPixelLevel,
 			int[][] oldPixelLevel, ArrayList<ArrayList<Integer>> pointsPenteGauche,
-			ArrayList<ArrayList<Integer>> pointsPenteDroite, int h0, int gOmega, int dOmega, int h2) {
+			ArrayList<ArrayList<Integer>> pointsPenteDroite, ArrayList<ArrayList<Integer>> pointsCourbeHaute, ArrayList<ArrayList<Integer>> pointsCourbeBasse, int h0, int gOmega, int dOmega, int h2) {
 		super();
 		this.maxThread = maxThread;
 		this.nbThread = nbThread;
@@ -37,6 +38,8 @@ public class ThreadSonoTraitementImage implements Runnable {
 		this.oldPixelLevel = oldPixelLevel;
 		this.pointsPenteGauche = pointsPenteGauche;
 		this.pointsPenteDroite = pointsPenteDroite;
+		this.pointsCourbeBasse = pointsCourbeBasse;
+		this.pointsCourbeHaute = pointsCourbeHaute;
 		this.h0 = h0;
 		this.gOmega = gOmega;
 		this.dOmega = dOmega;
@@ -66,7 +69,7 @@ public class ThreadSonoTraitementImage implements Runnable {
 					ArrayList<Integer> point = new ArrayList<Integer>(2); // Le point actuel
 					point.add(j);
 					point.add(i);
-					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point)) {
+					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point) || pointsCourbeHaute.contains(point) || pointsCourbeBasse.contains(point)) {
 						greyRGBColor = new Color(255, 0, 0);
 						greyRGB = greyRGBColor.getRGB();
 					}
@@ -74,7 +77,7 @@ public class ThreadSonoTraitementImage implements Runnable {
 				}
 			}
 		}
-		System.out.println("Je suis le thread numero "+nbThread+" et je remplis de la hauteur "+height_min+" à "+height_max);
+		//System.out.println("Je suis le thread numero "+nbThread+" et je remplis de la hauteur "+height_min+" à "+height_max);
 	}
 
 }
