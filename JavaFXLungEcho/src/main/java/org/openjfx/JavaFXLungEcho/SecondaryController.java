@@ -12,10 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -23,16 +19,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 public class SecondaryController {
 
@@ -61,6 +57,9 @@ public class SecondaryController {
 	
 	@FXML
 	private Button backToImageSelectionButton;
+	
+	 @FXML
+	    private Spinner<Integer> spinnerSeuil;
 
 	@FXML
 	public void initialize() {
@@ -70,6 +69,8 @@ public class SecondaryController {
 		choiceboxRecouvrement.setVisible(false);
 		labelRecouvrement.setVisible(false);
 		checkbox.setDisable(true);
+		SpinnerValueFactory<Integer> gradesValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 15, 0);
+		spinnerSeuil.setValueFactory(gradesValueFactory);
 	}
 
 	// Méthode appelée quand on appuie sur le bouton recouvrement
@@ -98,38 +99,38 @@ public class SecondaryController {
 	// méthode appelé quand on appuie sur le bouton pour lancer la loi de zipf
 	@FXML
 	void launchZipf(MouseEvent event) throws IOException {
+		long startTime = System.nanoTime();
 		Model model = Model.getInstance();
 		// zipfChart.au
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 
-		// TEST
-		TraitementBufferedImage er = new TraitementBufferedImage();
-		//BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testlena.jpg"));
-		//BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/testbateau.png"));
-		BufferedImage I = ImageIO.read(new File("src/main/resources/images/test/test_vert.png"));
-		er.BufferedImageToPixelMatrix(I);
-		//model.traitementZipf = new TraitementZipf(er.greyPixelsLevels,5,true,false);
-		//model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
 		int[] motifs = parseChoiceMotif();
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false, motifs[0], motifs[1]);
+		//les méthodes ne vont pas être les mêmes si on a une image dicom
+		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, spinnerSeuil.getValue(), true, false, motifs[0], motifs[1]);
+		
+		
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
 		int i = 1;
 		int maxvalue = 0, maxrange = mapso.size();
+		if(maxrange==1)
+		{			
+			maxrange++;
+		}
 		for (Entry<String, Integer> entry : mapso.entrySet()) {
 			Integer value = entry.getValue();
 			if (value > maxvalue)
 				maxvalue = value;
 
 			series.getData().add(new XYChart.Data<Number, Number>(i, value));
-			System.out.println("Valeur : " + value + " , rang : " + i);
 
 			i++;
 		}
+		model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
+		System.out.println("Maxvalue "+maxvalue+" Max range : "+(maxrange -1));
 		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(1, maxrange-1	),
 				new LogarithmicAxis(1, maxvalue));
-		
 		zipfChart.getData().add(series);
 		
 		
@@ -137,17 +138,23 @@ public class SecondaryController {
 		 StackPane root = new StackPane();
 		 root.getChildren().add(zipfChart);
         secondStage.setScene(new Scene(root,1280,720));
-        secondStage.setTitle("Loi de zipf appliqué avec un motif "+choicebox.getValue());
+        secondStage.setTitle("Loi de zipf appliqué avec un motif "+choicebox.getValue()+" et un seuil de "+spinnerSeuil.getValue());
         secondStage.show();
-		model.traitementZipf.printMapValuesAndKeys(mapso);
+		//model.traitementZipf.printMapValuesAndKeys(mapso);
 		System.out.println(choicebox.getValue());
 		System.out.println("x : " + motifs[0] + "; y : " + motifs[1]);
+		 long endTime = System.nanoTime();
+		 
+	        // obtenir la différence entre les deux valeurs de temps nano
+	        long timeElapsed = endTime - startTime;
+	        long milliTimeElapsed = timeElapsed / 1000000;
+	      
+	        System.out.println("Execution time in milliseconds: " + milliTimeElapsed);
 	}
 	
 	@FXML
     void goToPreviousScene(MouseEvent event) throws IOException {
 		App.setRoot("primary");
-		System.out.println("MDRR");
     }
 	
 	

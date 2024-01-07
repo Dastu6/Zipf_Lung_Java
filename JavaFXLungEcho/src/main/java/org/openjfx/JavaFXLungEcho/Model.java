@@ -42,5 +42,6 @@ public final class Model {
 	 public int photoNumber=-1;
 	 public int nbThread = 15;
 	public String favDir;
+	public boolean isDicomImage = false;
 	
 }

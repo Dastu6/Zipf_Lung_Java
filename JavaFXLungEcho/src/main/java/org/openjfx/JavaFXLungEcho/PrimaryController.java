@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javax.imageio.ImageIO;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -23,6 +25,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /**
@@ -36,6 +39,7 @@ import javafx.stage.Stage;
 public class PrimaryController {
 	int maxImage = -1;
 	private DirectoryChooser directoryChooser;
+	private FileChooser fileChooser;
 	private File selectedDirectory;
 	@FXML
 	private Button changeImage;
@@ -158,6 +162,7 @@ public class PrimaryController {
 	void switchImage(MouseEvent event) throws IOException {
 		App.setRoot("secondary");
 		Model.getInstance().photoNumber = (int) sliderImage.getValue();
+		Model.getInstance().isDicomImage=true;
 	}
 
 	@FXML
@@ -206,66 +211,8 @@ public class PrimaryController {
 	@FXML
 	void clickOnlistview(MouseEvent event) {
 		String imagename = listview.getSelectionModel().getSelectedItem();
-		System.out.println("clicked on " + imagename);
-		System.out.println("dirPath : " + selectedDirectory.getAbsolutePath());
 		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
-		System.out.println(imagePath);
-		try {
-			Model.getInstance().dicomLoader = new DicomLoader(selectedDirectory.getAbsolutePath(),
-					listview.getSelectionModel().getSelectedItem(), 0);
-			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
-			imageContainer.setImage(null);
-			imageContainer.setImage(currentImage);
-			traitementImageButton.setVisible(true);
-			traitementImageButton.setDisable(false);
-			changeImage.setVisible(true);
-			changeImage.setDisable(false);
-			imageContainer.setVisible(true);
-			imageContainer.setDisable(false);
-			sliderImage.setVisible(true);
-			sliderImage.setDisable(false);
-			listview.setVisible(false);
-
-			maxImage = Model.getInstance().dicomLoader.getNbImages() - 1;
-			sliderImage.setMax(maxImage);
-			sliderImage.setValue(0);
-			sliderTextField.setText("0");
-			sliderTextField.setVisible(true);
-			sliderTextField.setDisable(false);
-			selectDirButton.setVisible(false);
-			selectDirButton.setDisable(true);
-			selectFileButton.setVisible(false);
-			selectFileButton.setDisable(true);
-			labelList.setVisible(false);
-			labelSlider.setText("/" + maxImage);
-			this.sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
-
-				@Override
-				public void changed(ObservableValue<? extends Number> observable, Number oldNumber, Number newNumber) {
-					try {
-						sliderImage.setValue(newNumber.intValue());
-						int value = (int) sliderImage.getValue();
-						Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
-								.chargeImageDicomBufferise(value);
-						sliderTextField.setText(Integer.toString(value));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
-					imageContainer.setImage(null);
-					imageContainer.setImage(currentImage);
-					imageContainer1.setVisible(true);
-					imageContainer1.setDisable(false);
-					labelSlider.setVisible(true);
-				}
-			});
-			
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		putDicomImage(imagePath);
 	}
 
 	@FXML // Action lorsque l'on clique sur l'image de prétraitement
@@ -295,9 +242,11 @@ public class PrimaryController {
 
 	// Fais le prétraitement sur l'image et l'affiche
 	@FXML
-	void cutImage(MouseEvent event) {
+	void cutImage(MouseEvent event) throws Exception {
+		Model.getInstance().isDicomImage=true;
 		Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
-		Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(Model.getInstance().pretraitement.buffImg);
+		Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix
+		(Model.getInstance().isDicomImage,Model.getInstance().pretraitement.buffImg);
 		Model.getInstance().pretraitement.BufferedImageToSonogram();
 		imageContainer1.setVisible(true);
 		imageContainer1.setDisable(false);
@@ -308,8 +257,27 @@ public class PrimaryController {
 	}
 
 	@FXML
-	void selectFileButtonAction(MouseEvent event) {
+	void selectFileButtonAction(MouseEvent event) throws IOException {
+		fileChooser = new FileChooser();
+		fileChooser.setTitle("Sélectionner l'image à traiter");
+		FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image file", "*.png", "*.jpg",
+				"*.dcm");
+		fileChooser.getExtensionFilters().add(extFilter);
+		File f = new File(Model.getInstance().favDir);
+		if (f != null)
+			fileChooser.setInitialDirectory(f);
+		File fc = fileChooser.showOpenDialog((Stage) changeImage.getScene().getWindow());
+		if (fc != null) {
 
+			if (getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dcm")
+					|| getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dicom")) {
+				putDicomImage(fc.getAbsolutePath());
+			} else {// On a une image en .png ou .jpg
+				Model.getInstance().pretraitement.echographyImg = ImageIO.read(fc);
+				Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(false, Model.getInstance().pretraitement.echographyImg );
+				App.setRoot("secondary");
+			}
+		}
 	}
 
 	private Optional<String> getExtensionByStringHandling(String filename) {
@@ -394,10 +362,11 @@ public class PrimaryController {
 			labelList.setText("Liste des fichiers disponibles pour le dossier suivant : \n"
 					+ selectedDirectory.getAbsolutePath());
 			labelList.setDisable(false);
+
 		}
 	}
 
-	//Change the image printed on screen based on the value of the slider
+	// Change the image printed on screen based on the value of the slider
 	void changeImageSliderValue(int newImageValue) throws IOException {
 		System.out.println(maxImage);
 		if (newImageValue >= 0 && newImageValue <= maxImage) {
@@ -412,5 +381,68 @@ public class PrimaryController {
 		}
 		sliderTextField.prefColumnCountProperty().bind(sliderTextField.textProperty().length());
 
+	}
+
+	// méthode qui permet de sélectionner une image dicom et d'avoir accès au slider
+	void putDicomImage(String fileAbsolutePath) {
+		try {
+			Model.getInstance().dicomLoader = new DicomLoader(fileAbsolutePath, 0);
+			currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+			imageContainer.setImage(null);
+			imageContainer.setImage(currentImage);
+			traitementImageButton.setVisible(true);
+			traitementImageButton.setDisable(false);
+			changeImage.setVisible(true);
+			changeImage.setDisable(false);
+			imageContainer.setVisible(true);
+			imageContainer.setDisable(false);
+			sliderImage.setVisible(true);
+			sliderImage.setDisable(false);
+			listview.setVisible(false);
+
+			maxImage = Model.getInstance().dicomLoader.getNbImages() - 1;
+			sliderImage.setMax(maxImage);
+			sliderImage.setValue(0);
+			sliderTextField.setText("0");
+			sliderTextField.setVisible(true);
+			sliderTextField.setDisable(false);
+			selectDirButton.setVisible(false);
+			selectDirButton.setDisable(true);
+			selectFileButton.setVisible(false);
+			selectFileButton.setDisable(true);
+			labelList.setVisible(false);
+			labelSlider.setText("/" + maxImage);
+			this.sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
+
+				@Override
+				public void changed(ObservableValue<? extends Number> observable, Number oldNumber, Number newNumber) {
+					try {
+						sliderImage.setValue(newNumber.intValue());
+						int value = (int) sliderImage.getValue();
+						Model.getInstance().dicomLoader.dicomImage = null;
+						System.gc();
+						Model.getInstance().dicomLoader.dicomImage = Model.getInstance().dicomLoader
+								.chargeImageDicomBufferise(value);
+						sliderTextField.setText(Integer.toString(value));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					// Deletre proprement l'image
+					currentImage = null;
+					imageContainer.setImage(null);
+					System.gc();
+					currentImage = convertToFxImage(Model.getInstance().dicomLoader.dicomImage);
+					imageContainer.setImage(currentImage);
+					imageContainer1.setVisible(true);
+					imageContainer1.setDisable(false);
+					labelSlider.setVisible(true);
+				}
+			});
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

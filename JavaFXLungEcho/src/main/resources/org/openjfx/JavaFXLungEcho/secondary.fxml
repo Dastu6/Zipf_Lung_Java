@@ -5,6 +5,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,6 +16,8 @@
       <CheckBox fx:id="checkbox" mnemonicParsing="false" onAction="#changeRecouvrement" text="Recouvrement :" />
       <Label fx:id="labelRecouvrement" text=" Type de recouvrement :" />
       <ChoiceBox fx:id="choiceboxRecouvrement" prefWidth="150.0" />
+      <Label text="Seuil pour le calcul des motifs" />
+      <Spinner fx:id="spinnerSeuil" prefHeight="25.0" prefWidth="78.0" />
       <ImageView fx:id="imageViewer" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
         <Button fx:id="secondaryButton" onMouseClicked="#launchZipf" text="Lancer le traitement pour la loi de Zipf" />
       <Button fx:id="backToImageSelectionButton" mnemonicParsing="false" onMouseClicked="#goToPreviousScene" text="Retourner à la sélection de l'image" />

@@ -49,7 +49,7 @@ public class App extends Application {
         return fxmlLoader.load();
     }
     
-    public static void TraitementDicom() throws IOException {
+    public static void TraitementDicom() throws Exception {
     	model.dicomLoader = new DicomLoader("2019010K", 0);
     	model.pretraitement = new TraitementBufferedImage();
     	model.pretraitement.buffImg = model.dicomLoader.dicomImage;
