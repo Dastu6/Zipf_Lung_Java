@@ -40,7 +40,8 @@ public final class Model {
 	 TraitementBufferedImage pretraitement;
 	 TraitementZipf traitementZipf;
 	 public int photoNumber=-1;
-	 public int nbThread = 15;
+	 public int nbThreadTraitement = 15;
+	 final public int nbThreadPosition = 6; //WARNING : NE PAS TOUCHER
 	public String favDir;
 	
 }

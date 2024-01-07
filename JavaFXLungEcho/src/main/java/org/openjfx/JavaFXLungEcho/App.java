@@ -58,7 +58,12 @@ public class App extends Application {
     	File newF = new File("src/main/resources/images/saved_or_converted/test_echo.png");
     	ImageIO.write(model.pretraitement.echographyImg, "PNG", newF );
     	
-    	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, true, 3, 3);
+    	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, true, 3, 3, 
+    			model.pretraitement.array_pente_gauche, model.pretraitement.array_pente_droite, model.pretraitement.array_courbe_haute, 
+    			model.pretraitement.array_courbe_basse_gauche,model.pretraitement.array_courbe_basse_droite,model.pretraitement.booleanZipfMatrix, model.pretraitement.gOmega, 
+    			model.pretraitement.newHeight, model.pretraitement.midWidth, model.pretraitement.z, model.pretraitement.h0, 
+    			model.pretraitement.dOmega, (int)model.pretraitement.prevHGY, (int)model.pretraitement.prevBGY,
+    			model.pretraitement.h2);
     	model.traitementZipf.motifMapFromGreyMatrix();
     	System.out.println("Map de base");
     	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);

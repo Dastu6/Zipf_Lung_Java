@@ -111,7 +111,11 @@ public class SecondaryController {
 		//model.traitementZipf = new TraitementZipf(er.greyPixelsLevels,5,true,false);
 		//model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false);
 		int[] motifs = parseChoiceMotif();
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false, motifs[0], motifs[1]);
+		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false, motifs[0], motifs[1], 
+				model.pretraitement.array_pente_gauche, model.pretraitement.array_pente_droite, model.pretraitement.array_courbe_haute, 
+    			model.pretraitement.array_courbe_basse_gauche,model.pretraitement.array_courbe_basse_droite,model.pretraitement.booleanZipfMatrix,model.pretraitement.gOmega, 
+    			model.pretraitement.newHeight, model.pretraitement.midWidth, model.pretraitement.z, model.pretraitement.h0, 
+    			model.pretraitement.dOmega, (int)model.pretraitement.prevHGY, (int)model.pretraitement.prevBGY, model.pretraitement.h2);
 		model.traitementZipf.motifMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;

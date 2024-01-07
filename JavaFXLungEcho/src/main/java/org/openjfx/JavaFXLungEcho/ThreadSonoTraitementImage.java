@@ -21,7 +21,8 @@ public class ThreadSonoTraitementImage implements Runnable {
 	private ArrayList<ArrayList<Integer>> pointsPenteGauche;
 	private ArrayList<ArrayList<Integer>> pointsPenteDroite;
 	private ArrayList<ArrayList<Integer>> pointsCourbeHaute;
-	private ArrayList<ArrayList<Integer>> pointsCourbeBasse;
+	private ArrayList<ArrayList<Integer>> pointsCourbeBasseGauche;
+	private ArrayList<ArrayList<Integer>> pointsCourbeBasseDroite;
 	private int h0;
 	private int gOmega;
 	private int dOmega;
@@ -29,7 +30,7 @@ public class ThreadSonoTraitementImage implements Runnable {
 
 	public ThreadSonoTraitementImage(int maxThread, int nbThread, BufferedImage newImage, int[][] newPixelLevel,
 			int[][] oldPixelLevel, ArrayList<ArrayList<Integer>> pointsPenteGauche,
-			ArrayList<ArrayList<Integer>> pointsPenteDroite, ArrayList<ArrayList<Integer>> pointsCourbeHaute, ArrayList<ArrayList<Integer>> pointsCourbeBasse, int h0, int gOmega, int dOmega, int h2) {
+			ArrayList<ArrayList<Integer>> pointsPenteDroite, ArrayList<ArrayList<Integer>> pointsCourbeHaute, ArrayList<ArrayList<Integer>> pointsCourbeBasseGauche, ArrayList<ArrayList<Integer>> pointsCourbeBasseDroite, int h0, int gOmega, int dOmega, int h2) {
 		super();
 		this.maxThread = maxThread;
 		this.nbThread = nbThread;
@@ -38,8 +39,9 @@ public class ThreadSonoTraitementImage implements Runnable {
 		this.oldPixelLevel = oldPixelLevel;
 		this.pointsPenteGauche = pointsPenteGauche;
 		this.pointsPenteDroite = pointsPenteDroite;
-		this.pointsCourbeBasse = pointsCourbeBasse;
 		this.pointsCourbeHaute = pointsCourbeHaute;
+		this.pointsCourbeBasseGauche = pointsCourbeBasseGauche;
+		this.pointsCourbeBasseDroite = pointsCourbeBasseDroite;
 		this.h0 = h0;
 		this.gOmega = gOmega;
 		this.dOmega = dOmega;
@@ -67,9 +69,9 @@ public class ThreadSonoTraitementImage implements Runnable {
 					int greyRGB = greyRGBColor.getRGB();
 					// Si l'image est dans les points de l'échographie
 					ArrayList<Integer> point = new ArrayList<Integer>(2); // Le point actuel
-					point.add(j);
-					point.add(i);
-					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point) || pointsCourbeHaute.contains(point) || pointsCourbeBasse.contains(point)) {
+					point.add(j); //x
+					point.add(i); //y
+					if (pointsPenteGauche.contains(point) || pointsPenteDroite.contains(point) || pointsCourbeHaute.contains(point) || pointsCourbeBasseGauche.contains(point) || pointsCourbeBasseDroite.contains(point)) {
 						greyRGBColor = new Color(255, 0, 0);
 						greyRGB = greyRGBColor.getRGB();
 					}
