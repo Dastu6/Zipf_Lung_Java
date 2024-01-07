@@ -12,7 +12,22 @@ public class TraitementBufferedImage {
 									// a pas d'info echo
 	public int seuil_detect_fin;
 	public int[][] greyMatrixOnlySonogram;
+	public boolean[][] booleanZipfMatrix;
 	public BufferedImage echographyImg;
+	public int[] array_pente_gauche;
+	public int[] array_pente_droite;
+	public int[] array_courbe_haute;
+	public int[] array_courbe_basse_gauche;
+	public int[] array_courbe_basse_droite;
+	public int gOmega;
+	public int newHeight;
+	public int midWidth;
+	public int z;
+	public int h0;
+	public int dOmega;
+	public float prevHGY;
+	public float prevBGY;
+	public int h2;
 
 	public TraitementBufferedImage() {
 
@@ -27,13 +42,12 @@ public class TraitementBufferedImage {
 		if (isDicom) {
 
 			greyPixelsLevels = new int[heightImg][widthImg];
-			int nbThread = Model.getInstance().nbThread;
+			int nbThread = Model.getInstance().nbThreadTraitement;
 			for (int i = 0; i < nbThread; i++) {
 				ThreadTraitementImage temp = new ThreadTraitementImage(greyPixelsLevels, nbThread, bufferImg, i);
 				temp.run();
 			}
-		}
-		else {
+		} else {
 			BufferedImageToPixelMatrix(bufferImg);
 			greyMatrixOnlySonogram = greyPixelsLevels;
 		}
@@ -131,16 +145,16 @@ public class TraitementBufferedImage {
 				hOmega_diff++;
 			}
 		}
-		int dOmega = oldWidth - 1;
-		int gOmega = 0;
+		dOmega = oldWidth - 1;
+		gOmega = 0;
 		while (greyPixelsLevels[hOmega][gOmega] != triangle_grey_value) { // On a ici le second triangle
 			gOmega++;
 		}
 
 		// Etape 0 : trouver le milieu de l'image actuelle et descendre jusqu'au premier
 		// pixel de l'image.
-		int midWidth = (int) (((oldWidth - 1) - gOmega) / 2);
-		int h0 = 0;
+		midWidth = (int) (((oldWidth - 1) - gOmega) / 2);
+		h0 = 0;
 
 		while (greyPixelsLevels[h0][midWidth] <= seuil_detect_debut && h0 < oldHeight) { // La boucle s'arrête lorsqu'on
 																							// trouve un pixel non noir
@@ -149,14 +163,14 @@ public class TraitementBufferedImage {
 		}
 
 		// Etape 2 : Trouver le point le plus bas de l'échographie
-		int h2 = oldHeight - 1;
+		h2 = oldHeight - 1;
 		while (greyPixelsLevels[h2][midWidth] < seuil_detect_debut) { // On part du bas et on remonte
 			h2--;
 		}
 		// Etape P : On va calculer les pentes et contours
-		int z = dOmega + gOmega - midWidth + 1;
+		z = dOmega + gOmega - midWidth + 1;
 		int newWidth = dOmega - gOmega + 1;
-		int newHeight = h2 - h0 + 1;
+		newHeight = h2 - h0 + 1;
 		// Courbe du bas droite : ( , ) -> ( , )
 		// Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega, newHeight, midWidth, h0); // On part du point le plus à gauche
@@ -220,12 +234,13 @@ public class TraitementBufferedImage {
 		// On va calculer la courbe haute de la zone de l'échographie : d'abord partie
 		/////////////////// gauche puis droite
 		ArrayList<ArrayList<Float>> pointsCourbeHauteGaucheTemp = new ArrayList<ArrayList<Float>>();
+
 		ArrayList<Float> aHG0 = new ArrayList<Float>(2); // Point gauche pente haute
 		aHG0.add((float) midWidth);
 		aHG0.add((float) h0);
 		pointsCourbeHauteGaucheTemp.add(aHG0);
 		float prevHGX = midWidth;
-		float prevHGY = h0;
+		prevHGY = h0;
 		for (int x = 1; x < (int) ((z - midWidth) / 2); x++) {
 			ArrayList<Float> a = new ArrayList<Float>(2);
 			int countX = 1;
@@ -287,7 +302,7 @@ public class TraitementBufferedImage {
 		aBG0.add((float) newHeight);
 		pointsCourbeBasseGaucheTemp.add(aBG0);
 		float prevBGX = gOmega;
-		float prevBGY = newHeight;
+		prevBGY = newHeight;
 		while (prevBGX < midWidth) {
 			ArrayList<Float> a = new ArrayList<Float>(2);
 			int countX = 1;
@@ -324,33 +339,68 @@ public class TraitementBufferedImage {
 			prevBDY += countY;
 		}
 
-		ArrayList<ArrayList<Integer>> pointsCourbeBasse = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> pointsCourbeBasseGauche = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Float> aBGTemp : pointsCourbeBasseGaucheTemp) {
 			ArrayList<Integer> aBG = new ArrayList<Integer>(2);
 			float aBGX = aBGTemp.get(0);
 			float aBGY = aBGTemp.get(1);
 			aBG.add((int) aBGX);
 			aBG.add((int) aBGY);
-			pointsCourbeBasse.add(aBG);
+			pointsCourbeBasseGauche.add(aBG);
 		}
+		ArrayList<ArrayList<Integer>> pointsCourbeBasseDroite = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Float> aBDTemp : pointsCourbeBasseDroiteTemp) {
 			ArrayList<Integer> aBD = new ArrayList<Integer>(2);
 			float aBDX = aBDTemp.get(0);
 			float aBDY = aBDTemp.get(1);
 			aBD.add((int) aBDX);
 			aBD.add((int) aBDY);
-			pointsCourbeBasse.add(aBD);
+			pointsCourbeBasseDroite.add(aBD);
+		}
+
+		// Conversion ArrayList ArrayList vers int[]
+		int taille_pente_gauche = pointsPenteGauche.size();
+		int taille_pente_droite = pointsPenteDroite.size();
+		int taille_courbe_haute = pointsCourbeHaute.size();
+		int taille_courbe_basse_gauche = pointsCourbeBasseGauche.size();
+		int taille_courbe_basse_droite = pointsCourbeBasseDroite.size();
+		array_pente_gauche = new int[2 * taille_pente_gauche];
+		array_pente_droite = new int[2 * taille_pente_droite];
+		array_courbe_haute = new int[2 * taille_courbe_haute];
+		array_courbe_basse_gauche = new int[2 * taille_courbe_basse_gauche];
+		array_courbe_basse_droite = new int[2 * taille_courbe_basse_droite];
+		for (int pg = 0; pg < taille_pente_gauche; pg++) {
+			array_pente_gauche[2 * pg] = pointsPenteGauche.get(pg).get(0);
+			array_pente_gauche[2 * pg + 1] = pointsPenteGauche.get(pg).get(1);
+		}
+		for (int pd = 0; pd < taille_pente_droite; pd++) {
+			array_pente_droite[2 * pd] = pointsPenteDroite.get(pd).get(0);
+			array_pente_droite[2 * pd + 1] = pointsPenteDroite.get(pd).get(1);
+		}
+		for (int ch = 0; ch < taille_courbe_haute; ch++) {
+			array_courbe_haute[2 * ch] = pointsCourbeHaute.get(ch).get(0);
+			array_courbe_haute[2 * ch + 1] = pointsCourbeHaute.get(ch).get(1);
+		}
+		for (int cbg = 0; cbg < taille_courbe_basse_gauche; cbg++) {
+			array_courbe_basse_gauche[2 * cbg] = pointsCourbeBasseGauche.get(cbg).get(0);
+			array_courbe_basse_gauche[2 * cbg + 1] = pointsCourbeBasseGauche.get(cbg).get(1);
+		}
+		for (int cbd = 0; cbd < taille_courbe_basse_droite; cbd++) {
+			array_courbe_basse_droite[2 * cbd] = pointsCourbeBasseDroite.get(cbd).get(0);
+			array_courbe_basse_droite[2 * cbd + 1] = pointsCourbeBasseDroite.get(cbd).get(1);
 		}
 
 		// Etape 6 : calcul de la nouvelle image
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
+		booleanZipfMatrix = new boolean[newHeight][newWidth]; // Matrice qui va sauvegarder si le point doit être traité
+																// par Zipf
 		echographyImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
 
-		int nbThread = Model.getInstance().nbThread;
-		for (int i = 0; i < nbThread; i++) {
-			ThreadSonoTraitementImage temp = new ThreadSonoTraitementImage(nbThread, i, echographyImg,
+		int nbThreadTraitement = Model.getInstance().nbThreadTraitement;
+		for (int i = 0; i < nbThreadTraitement; i++) {
+			ThreadSonoTraitementImage temp = new ThreadSonoTraitementImage(nbThreadTraitement, i, echographyImg,
 					greyMatrixOnlySonogram, greyPixelsLevels, pointsPenteGauche, pointsPenteDroite, pointsCourbeHaute,
-					pointsCourbeBasse, h0, gOmega, dOmega, h2);
+					pointsCourbeBasseGauche, pointsCourbeBasseDroite, h0, gOmega, dOmega, h2);
 			temp.run();
 		}
 

@@ -22,11 +22,25 @@ public class TraitementZipf {
 	public boolean ascendSortingMap;
 	public ConcurrentHashMap<String, Integer> mapMotifNombreOccurence;
 	public HashMap<String, Integer> mapSortedCodedMotifOccurence;
+	public boolean[][] ZipfOrNot;
+	public int[] penteGauche;
+	public int[] penteDroite;
+	public int[] courbeHaute;
+	public int[] courbeBasseGauche;
+	public int[] courbeBasseDroite;
+	public int gOmega;
+	public int newHeight;
+	public int midWidth;
+	public int z;
+	public int h0;
+	public int dOmega;
+	public float prevHGY;
+	public float prevBGY;
+	public int h2;
 	
-
-	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap, int motifX,
-			int motifY) { // Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans
-							// traitbuffer)
+	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap, int motifX, int motifY,
+			int[] penteGauche, int[] penteDroite, int[] courbeHaute, int[] courbeBasseGauche, int[] courbeBasseDroite,
+			boolean[][] booleanZipf, int gOmega, int newHeight, int midWidth, int z, int h0, int dOmega, int prevHGY, int prevBGY, int h2) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		motifSizeX = motifX;
@@ -35,7 +49,22 @@ public class TraitementZipf {
 		seuilPixelDifferenceDetection = seuil;
 		specificOrientation = specifOrientation;
 		ascendSortingMap = orderSortingMap;
-		mapMotifNombreOccurence = new ConcurrentHashMap<String, Integer>();
+		mapMotifNombreOccurence = new ConcurrentHashMap<String,Integer>();
+		ZipfOrNot = booleanZipf;
+		this.penteDroite = penteDroite;
+		this.penteGauche = penteGauche;
+		this.courbeHaute = courbeHaute;
+		this.courbeBasseGauche = courbeBasseGauche;
+		this.courbeBasseDroite = courbeBasseDroite;
+		this.gOmega = gOmega;
+		this.newHeight = newHeight;
+		this.midWidth = midWidth;
+		this.z = z;
+		this.h0 = h0;
+		this.dOmega = dOmega;
+		this.prevBGY = prevBGY;
+		this.prevHGY = prevHGY;
+		this.h2 = h2;
 	}
 
 	// Permet de convertir un nombre d'une base vers une autre base
@@ -118,6 +147,26 @@ public class TraitementZipf {
 	}
 
 	public void motifMapFromGreyMatrix() {
+		
+		 long startTime = System.nanoTime();
+		 
+		 int nbThreadPosition = Model.getInstance().nbThreadPosition;
+			for(int th = 0; th < nbThreadPosition; th++)
+			{
+				 ThreadSonoComparaisonPositionImage temp = new ThreadSonoComparaisonPositionImage
+						 (th, ZipfOrNot,penteGauche,penteDroite,courbeHaute,courbeBasseGauche,courbeBasseDroite,
+								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
+				 temp.run();
+			}	 
+		 long endTime = System.nanoTime();
+		 
+	        // obtenir la différence entre les deux valeurs de temps nano
+	        long timeElapsed = endTime - startTime;
+	        long milliTimeElapsed = timeElapsed / 1000000;
+	      
+	        System.out.println("Execution time in milliseconds: " + milliTimeElapsed);
+	        System.out.println("Execution time in seconds : " + milliTimeElapsed / 1000);
+		
 		int number_row = greyMatrix.length;
 		int number_col = greyMatrix[0].length;
 		int max_row_iteration = number_row / motifSizeX; // On va enlever les quelques pixels qui dépassent
@@ -130,24 +179,30 @@ public class TraitementZipf {
 		for (int i = corner_limitX; i < max_row_iteration; i++) {
 			for (int j = corner_limitY; j < max_col_iteration; j++) { // Pour chaque pixel on va maintenant regarder son
 																		// voisinage
-				int[] listMotif = new int[motifSizeX * motifSizeY];
-				int count = 0;
-				for (int ki = i - corner_limitX; ki <= i + corner_limitX; ki++) {
-					for (int kj = j - corner_limitY; kj <= j + corner_limitY; kj++) {
-						listMotif[count] = greyMatrix[ki][kj];
-						count++;
+				
+					int[] listMotif = new int[motifSizeX * motifSizeY];
+					int count = 0;
+					boolean check = true;
+					for (int ki = i-corner_limitX; ki <= i+corner_limitX; ki++) {
+						for (int kj = j-corner_limitY; kj <= j+corner_limitY; kj++) {
+							if (ki == i-corner_limitX && kj == j-corner_limitY && !ZipfOrNot[ki][kj]) {
+								check = false;
+							}
+							//if (check) {
+								listMotif[count] = greyMatrix[ki][kj];
+								count++;
+							//}
+						}
 					}
-				}
-				ArrayList<Integer> codedMotif = codeMotif(listMotif);
-				String strCodedMotif = codedMotifToString(codedMotif);
-				if (mapMotifNombreOccurence.containsKey(strCodedMotif)) { // Si le motif est déjà présent dans notre
-																			// image
-					int old_value = mapMotifNombreOccurence.get(strCodedMotif); // Alors on augmente son nombre
-																				// d'occurence de 1
-					mapMotifNombreOccurence.replace(strCodedMotif, old_value + 1);
-				} else {
-					mapMotifNombreOccurence.put(strCodedMotif, 1);
-				}
+					ArrayList<Integer> codedMotif = codeMotif(listMotif);
+					String strCodedMotif = codedMotifToString(codedMotif);
+					if (mapMotifNombreOccurence.containsKey(strCodedMotif)){ //Si le motif est déjà présent dans notre image
+						int old_value = mapMotifNombreOccurence.get(strCodedMotif); //Alors on augmente son nombre d'occurence de 1
+						mapMotifNombreOccurence.replace(strCodedMotif, old_value+1);
+					}
+					else {
+						mapMotifNombreOccurence.put(strCodedMotif, 1);
+					}
 			}
 		}
 	}
@@ -155,7 +210,7 @@ public class TraitementZipf {
 	// cette fonction utilise des threads et réalise sur toutes l'images. C'est donc appliquable
 	//Sur toutes les images, pour les images .dcm avec des contours particuliers il faudra utiliser une autre méthode
 	public void motifThreadMapFromGreyMatrix() {
-		int maxThread = Model.getInstance().nbThread;
+		int maxThread = Model.getInstance().nbThreadTraitement;
 		for(int i=0;i<maxThread;i++)
 		{
 			ThreadTraitementZipf temp = new ThreadTraitementZipf
