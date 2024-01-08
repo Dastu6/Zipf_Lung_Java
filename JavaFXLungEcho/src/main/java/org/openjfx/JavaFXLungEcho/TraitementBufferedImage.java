@@ -1,6 +1,5 @@
 package org.openjfx.JavaFXLungEcho;
 
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -178,47 +177,6 @@ public class TraitementBufferedImage {
 
 		///////////////// PENTES///////////////////////::
 
-		// On a la liste de tous les points qui sont sur la pente gauche
-//		ArrayList<ArrayList<Float>> pointsPenteGaucheTemp = new ArrayList<ArrayList<Float>>();
-//		ArrayList<Float> aG0 = new ArrayList<Float>(2);
-//		aG0.add((float)gOmega); aG0.add((float)newHeight); 
-//		pointsPenteGaucheTemp.add(aG0);
-//		float prevGX = gOmega; float prevGY = newHeight;
-//		for (int x = 1; x < (int)midWidth-gOmega; x++) {
-//			ArrayList<Float> a = new ArrayList<Float>(2);
-//			a.add(prevGX+1); a.add((float) (prevGY+penteGauche));
-//			pointsPenteGaucheTemp.add(a);
-//			prevGX += 1; prevGY = (float) (prevGY+penteGauche);
-//		}
-//		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
-//		for (ArrayList<Float> aGTemp : pointsPenteGaucheTemp) {
-//			ArrayList<Integer> aG = new ArrayList<Integer>(2);
-//			float aGX = aGTemp.get(0); float aGY = aGTemp.get(1);
-//			aG.add((int)aGX); aG.add((int)aGY);
-//			pointsPenteGauche.add(aG);
-//		}
-//		
-//		//On va créer une liste temporaire de flotants car la pente est un float
-//		ArrayList<ArrayList<Float>> pointsPenteDroiteTemp = new ArrayList<ArrayList<Float>>();
-//		ArrayList<Float> aD0 = new ArrayList<Float>(2);
-//		aD0.add((float)z); aD0.add((float)h0); 
-//		pointsPenteDroiteTemp.add(aD0);
-//		float prevDX = z; float prevDY = h0;
-//		for (int x = 1; x < (int)dOmega-z; x++) {
-//			ArrayList<Float> a = new ArrayList<Float>(2);
-//			a.add(prevDX+1); a.add((float)(prevDY+penteDroite));
-//			pointsPenteDroiteTemp.add(a);
-//			prevDX += 1; prevDY = (float)(prevDY+penteDroite);
-//		}
-//		//On va maintenant faire la vraie liste des points où on va recast en int car pixel : (int x, int y)
-//		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
-//		for (ArrayList<Float> aDTemp : pointsPenteDroiteTemp) {
-//			ArrayList<Integer> aD = new ArrayList<Integer>(2);
-//			float aDX = aDTemp.get(0); float aDY = aDTemp.get(1);
-//			aD.add((int)aDX); aD.add((int)aDY);
-//			pointsPenteDroite.add(aD);
-//		}
-
 		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
 
@@ -357,38 +315,15 @@ public class TraitementBufferedImage {
 			aBD.add((int) aBDY);
 			pointsCourbeBasseDroite.add(aBD);
 		}
+		
+		PenteBufferedImage pentegauche = new PenteBufferedImage(pointsPenteGauche,gOmega,h0);
+		PenteBufferedImage pentedroite = new PenteBufferedImage(pointsPenteDroite,gOmega,h0);
+		
+		PenteBufferedImage courbehaute = new PenteBufferedImage(pointsCourbeHaute,gOmega,h0);
+		PenteBufferedImage courbebassedroite = new PenteBufferedImage(pointsCourbeBasseDroite,gOmega,h0);
+		PenteBufferedImage courbebassegauche = new PenteBufferedImage(pointsCourbeBasseGauche,gOmega,h0);
 
-		// Conversion ArrayList ArrayList vers int[]
-		int taille_pente_gauche = pointsPenteGauche.size();
-		int taille_pente_droite = pointsPenteDroite.size();
-		int taille_courbe_haute = pointsCourbeHaute.size();
-		int taille_courbe_basse_gauche = pointsCourbeBasseGauche.size();
-		int taille_courbe_basse_droite = pointsCourbeBasseDroite.size();
-		array_pente_gauche = new int[2 * taille_pente_gauche];
-		array_pente_droite = new int[2 * taille_pente_droite];
-		array_courbe_haute = new int[2 * taille_courbe_haute];
-		array_courbe_basse_gauche = new int[2 * taille_courbe_basse_gauche];
-		array_courbe_basse_droite = new int[2 * taille_courbe_basse_droite];
-		for (int pg = 0; pg < taille_pente_gauche; pg++) {
-			array_pente_gauche[2 * pg] = pointsPenteGauche.get(pg).get(0);
-			array_pente_gauche[2 * pg + 1] = pointsPenteGauche.get(pg).get(1);
-		}
-		for (int pd = 0; pd < taille_pente_droite; pd++) {
-			array_pente_droite[2 * pd] = pointsPenteDroite.get(pd).get(0);
-			array_pente_droite[2 * pd + 1] = pointsPenteDroite.get(pd).get(1);
-		}
-		for (int ch = 0; ch < taille_courbe_haute; ch++) {
-			array_courbe_haute[2 * ch] = pointsCourbeHaute.get(ch).get(0);
-			array_courbe_haute[2 * ch + 1] = pointsCourbeHaute.get(ch).get(1);
-		}
-		for (int cbg = 0; cbg < taille_courbe_basse_gauche; cbg++) {
-			array_courbe_basse_gauche[2 * cbg] = pointsCourbeBasseGauche.get(cbg).get(0);
-			array_courbe_basse_gauche[2 * cbg + 1] = pointsCourbeBasseGauche.get(cbg).get(1);
-		}
-		for (int cbd = 0; cbd < taille_courbe_basse_droite; cbd++) {
-			array_courbe_basse_droite[2 * cbd] = pointsCourbeBasseDroite.get(cbd).get(0);
-			array_courbe_basse_droite[2 * cbd + 1] = pointsCourbeBasseDroite.get(cbd).get(1);
-		}
+	
 
 		// Etape 6 : calcul de la nouvelle image
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
@@ -403,6 +338,27 @@ public class TraitementBufferedImage {
 					pointsCourbeBasseGauche, pointsCourbeBasseDroite, h0, gOmega, dOmega, h2);
 			temp.run();
 		}
+		
+		 
+		 int nbThreadPosition = Model.getInstance().nbThreadPosition;
+			
+		 for(int th = 0; th < nbThreadPosition; th++)
+			{
+				ThreadSonoBooleanMatrix temp = new ThreadSonoBooleanMatrix
+						 (th, booleanZipfMatrix,pentegauche,pentedroite,courbehaute,courbebassegauche,courbebassedroite,
+								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
+				 temp.run();
+			}	 
+		 
+		 /*for(int th = 0; th < nbThreadPosition; th++)
+			{
+				ThreadSonoBooleanMatrix temp = new ThreadSonoBooleanMatrix
+						 (th, booleanZipfMatrix,tempgauche,array_pente_droite,array_courbe_haute,array_courbe_basse_gauche,array_courbe_basse_droite,
+								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
+				 temp.run();
+			}	 */
+		
+		
 
 		long endTime = System.nanoTime();
 

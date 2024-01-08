@@ -23,24 +23,10 @@ public class TraitementZipf {
 	public ConcurrentHashMap<String, Integer> mapMotifNombreOccurence;
 	public HashMap<String, Integer> mapSortedCodedMotifOccurence;
 	public boolean[][] ZipfOrNot;
-	public int[] penteGauche;
-	public int[] penteDroite;
-	public int[] courbeHaute;
-	public int[] courbeBasseGauche;
-	public int[] courbeBasseDroite;
-	public int gOmega;
-	public int newHeight;
-	public int midWidth;
-	public int z;
-	public int h0;
-	public int dOmega;
-	public float prevHGY;
-	public float prevBGY;
-	public int h2;
+
 	
 	public TraitementZipf(int[][] matrix, int seuil, boolean specifOrientation, boolean orderSortingMap, int motifX, int motifY,
-			int[] penteGauche, int[] penteDroite, int[] courbeHaute, int[] courbeBasseGauche, int[] courbeBasseDroite,
-			boolean[][] booleanZipf, int gOmega, int newHeight, int midWidth, int z, int h0, int dOmega, int prevHGY, int prevBGY, int h2) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
+			boolean[][] booleanZipf) { //Il faut lui passer une matrice d'identité (greyMatrixOnlySonogram dans traitbuffer)
 		greyMatrix = matrix.clone();
 		motifSize = 3;
 		motifSizeX = motifX;
@@ -51,20 +37,6 @@ public class TraitementZipf {
 		ascendSortingMap = orderSortingMap;
 		mapMotifNombreOccurence = new ConcurrentHashMap<String,Integer>();
 		ZipfOrNot = booleanZipf;
-		this.penteDroite = penteDroite;
-		this.penteGauche = penteGauche;
-		this.courbeHaute = courbeHaute;
-		this.courbeBasseGauche = courbeBasseGauche;
-		this.courbeBasseDroite = courbeBasseDroite;
-		this.gOmega = gOmega;
-		this.newHeight = newHeight;
-		this.midWidth = midWidth;
-		this.z = z;
-		this.h0 = h0;
-		this.dOmega = dOmega;
-		this.prevBGY = prevBGY;
-		this.prevHGY = prevHGY;
-		this.h2 = h2;
 	}
 
 	// Permet de convertir un nombre d'une base vers une autre base
@@ -131,6 +103,7 @@ public class TraitementZipf {
 	}
 
 	public void printMapValuesAndKeys(ConcurrentHashMap<String, Integer> map) {
+		System.out.println("Eh ho");
 		System.out.println(map.keySet());
 		System.out.println(map.values());
 	}
@@ -149,15 +122,7 @@ public class TraitementZipf {
 	public void motifMapFromGreyMatrix() {
 		
 		 long startTime = System.nanoTime();
-		 
-		 int nbThreadPosition = Model.getInstance().nbThreadPosition;
-			for(int th = 0; th < nbThreadPosition; th++)
-			{
-				 ThreadSonoComparaisonPositionImage temp = new ThreadSonoComparaisonPositionImage
-						 (th, ZipfOrNot,penteGauche,penteDroite,courbeHaute,courbeBasseGauche,courbeBasseDroite,
-								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
-				 temp.run();
-			}	 
+		
 		 long endTime = System.nanoTime();
 		 
 	        // obtenir la différence entre les deux valeurs de temps nano
@@ -219,6 +184,35 @@ public class TraitementZipf {
 			temp.run();
 		}
 		
+	}
+	
+	//Dicom's version
+	public void motifThreadMapFromGreyMatrixDicom() {
+		int maxThread = Model.getInstance().nbThreadTraitement;
+		for(int i=0;i<maxThread;i++)
+		{
+			ThreadTraitementZipf2 temp = new ThreadTraitementZipf2
+					(maxThread, i, seuilPixelDifferenceDetection,
+							specificOrientation, greyMatrix, motifSizeX, motifSizeY, mapMotifNombreOccurence,ZipfOrNot);
+			temp.run();
+		}
+		printMapValuesAndKeys(mapMotifNombreOccurence);
+	}
+	
+	
+	public void printbooleanZipf() {
+		for(int i=0;i<ZipfOrNot.length;i++)
+		{
+			System.out.print("i : "+i+ " ");
+			for(int j=0;j<ZipfOrNot[i].length;j++)
+			{
+				if(ZipfOrNot[i][j])
+					System.out.print(" "+ 1+" ");
+				else
+					System.out.print(" "+ 0+" ");
+			}
+			System.out.print("\n");
+		}
 	}
 	
 }

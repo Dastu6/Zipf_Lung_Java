@@ -1,21 +1,16 @@
 package org.openjfx.JavaFXLungEcho;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import javax.imageio.ImageIO;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.stage.Stage;
-import javafx.scene.Parent;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -30,10 +25,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class SecondaryController {
 
@@ -114,12 +109,14 @@ public class SecondaryController {
 		//model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, spinnerSeuil.getValue(), true, false, motifs[0], motifs[1]);
 		
 		
-		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, false, motifs[0], motifs[1], 
-				model.pretraitement.array_pente_gauche, model.pretraitement.array_pente_droite, model.pretraitement.array_courbe_haute, 
-    			model.pretraitement.array_courbe_basse_gauche,model.pretraitement.array_courbe_basse_droite,model.pretraitement.booleanZipfMatrix,model.pretraitement.gOmega, 
-    			model.pretraitement.newHeight, model.pretraitement.midWidth, model.pretraitement.z, model.pretraitement.h0, 
-    			model.pretraitement.dOmega, (int)model.pretraitement.prevHGY, (int)model.pretraitement.prevBGY, model.pretraitement.h2);
-		model.traitementZipf.motifMapFromGreyMatrix();
+		model.traitementZipf = new TraitementZipf
+				(model.pretraitement.greyMatrixOnlySonogram, 0, true, false,
+				motifs[0], motifs[1], model.pretraitement.booleanZipfMatrix);
+		
+		if(model.isDicomImage)
+			model.traitementZipf.motifThreadMapFromGreyMatrixDicom();
+		else
+			model.traitementZipf.motifThreadMapFromGreyMatrix();
 		model.traitementZipf.sortMapByOccurence();
 		HashMap<String, Integer> mapso = model.traitementZipf.mapSortedCodedMotifOccurence;
 		int i = 1;
@@ -137,7 +134,7 @@ public class SecondaryController {
 
 			i++;
 		}
-		model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
+		model.traitementZipf.printbooleanZipf();
 		System.out.println("Maxvalue "+maxvalue+" Max range : "+(maxrange -1));
 		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(1, maxrange-1	),
 				new LogarithmicAxis(1, maxvalue));
@@ -183,4 +180,68 @@ public class SecondaryController {
 
 		return new ImageView(wr).getImage();
 	}
+	
+	 /** @return plotted y values for monotonically increasing integer x values, starting from x=1 */
+	  public ObservableList<XYChart.Data<Integer, Integer>> plot(int... y) {
+	    final ObservableList<XYChart.Data<Integer, Integer>> dataset = FXCollections.observableArrayList();
+	    int i = 0;
+	    while (i < y.length) {
+	      final XYChart.Data<Integer, Integer> data = new XYChart.Data<>(i + 1, y[i]);
+	      data.setNode(
+	          new HoveredThresholdNode(
+	              (i == 0) ? 0 : y[i-1],
+	              y[i]
+	          )
+	      );
+
+	      dataset.add(data);
+	      i++;
+	    }
+
+	    return dataset;
+	  }
+	
+	
+	 /** a node which displays a value on hover, but is otherwise empty */
+	  class HoveredThresholdNode extends StackPane {
+	    HoveredThresholdNode(int priorValue, int value) {
+	      setPrefSize(15, 15);
+
+	      final Label label = createDataThresholdLabel(priorValue, value);
+
+	      setOnMouseEntered(new EventHandler<MouseEvent>() {
+	        @Override public void handle(MouseEvent mouseEvent) {
+	          getChildren().setAll(label);
+	          setCursor(Cursor.NONE);
+	          toFront();
+	        }
+	      });
+	      setOnMouseExited(new EventHandler<MouseEvent>() {
+	        @Override public void handle(MouseEvent mouseEvent) {
+	          getChildren().clear();
+	          setCursor(Cursor.CROSSHAIR);
+	        }
+	      });
+	    }
+	
+	
+	    private Label createDataThresholdLabel(int priorValue, int value) {
+	        final Label label = new Label(value + "");
+	        label.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
+	        label.setStyle("-fx-font-size: 20; -fx-font-weight: bold;");
+
+	        if (priorValue == 0) {
+	          label.setTextFill(Color.DARKGRAY);
+	        } else if (value > priorValue) {
+	          label.setTextFill(Color.FORESTGREEN);
+	        } else {
+	          label.setTextFill(Color.FIREBRICK);
+	        }
+
+	        label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
+	        return label;
+	      }
+	  }
+	
+	
 }
