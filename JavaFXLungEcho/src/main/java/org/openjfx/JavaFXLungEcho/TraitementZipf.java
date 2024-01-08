@@ -159,7 +159,18 @@ public class TraitementZipf {
 	      
 	        System.out.println("Execution time in milliseconds: " + milliTimeElapsed);
 	        System.out.println("Execution time in seconds : " + milliTimeElapsed / 1000);
-		
+	        for(int i=0;i<ZipfOrNot.length;i++)
+	        {
+	            System.out.print("i : "+i+ " ");
+	            for(int j=0;j<ZipfOrNot[i].length;j++)
+	            {
+	                if(ZipfOrNot[i][j])
+	                    System.out.print(" "+ 1+" ");
+	                else
+	                    System.out.print(" "+ 0+" ");
+	            }
+	            System.out.print("\n");
+	        }
 		int number_row = greyMatrix.length;
 		int number_col = greyMatrix[0].length;
 		int max_row_iteration = number_row/motifSizeX; //On va enlever les quelques pixels qui dépassent 
@@ -195,4 +206,18 @@ public class TraitementZipf {
 			}
 		}
 	}
+	/*public void printbooleanZipf() {
+        for(int i=0;i<ZipfOrNot.length;i++)
+        {
+            System.out.print("i : "+i+ " ");
+            for(int j=0;j<ZipfOrNot[i].length;j++)
+            {
+                if(ZipfOrNot[i][j])
+                    System.out.print(" "+ 1+" ");
+                else
+                    System.out.print(" "+ 0+" ");
+            }
+            System.out.print("\n");
+        }
+    }*/
 }

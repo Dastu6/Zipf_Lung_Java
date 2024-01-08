@@ -65,11 +65,12 @@ public class App extends Application {
     			model.pretraitement.dOmega, (int)model.pretraitement.prevHGY, (int)model.pretraitement.prevBGY,
     			model.pretraitement.h2);
     	model.traitementZipf.motifMapFromGreyMatrix();
-    	System.out.println("Map de base");
-    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
+    	//System.out.println("Map de base");
+    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
     	model.traitementZipf.sortMapByOccurence();
-    	System.out.println("Map sorted");
-    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
+    	//System.out.println("Map sorted");
+    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
+    	
     }
 
     public static void main(String[] args) throws IOException {
