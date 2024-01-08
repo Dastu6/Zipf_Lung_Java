@@ -61,7 +61,7 @@ public class ThreadSonoComparaisonPositionImage implements Runnable {
 			break;
 		case 2: //Partie centrale
 			this.height_min = prevHGY;
-			this.height_max = prevBGY;
+			this.height_max = newHeight;
 			this.width_min = midWidth;
 			this.width_max = z;
 			break;
@@ -93,21 +93,12 @@ public class ThreadSonoComparaisonPositionImage implements Runnable {
 		int j_sono = 0;
 		for (int i = height_min; i < height_max; i++) {
 			for (int j = width_min; j < width_max; j++) {
-				//if (j >= gOmega && j <= dOmega && i >= h0 && i <= h2) { // on est dans la zone de l'echographie
-					i_sono = i - h0;
-					j_sono = j - gOmega;
-				//if (j >= gOmega && j <= dOmega && i >= h0 && i <= h2) { // on est dans la zone de l'echographie
-					/*i_sono = i - h0;
-					j_sono = j - gOmega;
-					newPixelLevel[i_sono][j_sono] = oldPixelLevel[i][j];
-					Color greyRGBColor = new Color(newPixelLevel[i_sono][j_sono], newPixelLevel[i_sono][j_sono],
-							newPixelLevel[i_sono][j_sono]);
-					int greyRGB = greyRGBColor.getRGB();*/
-					ArrayList<Integer> point = new ArrayList<Integer>(2); // Le point actuel
-					point.add(j); //x
-					point.add(i); //y
-					int x = point.get(0); int y = point.get(1);
-					switch (nThread) {					
+				int x = i;
+				int y = j;
+					switch (nThread) {
+					
+//int[] = { 0,0,0,1,0,2,0,3}
+					
 					case 0: //Partie supérieur gauche : pente gauche
 						//Pour chaque point : chercher si le point de la pente est avant ou après (sur une même ligne)
 						if (y>pointsPenteGauche[2*(x-width_min)+1]) { //Si le point est en dessous de la pente gauche
@@ -138,9 +129,8 @@ public class ThreadSonoComparaisonPositionImage implements Runnable {
 						}
 						break;
 					}
-				//}
+				}
 			}
-		}
 		//System.out.println("Je suis le thread numero "+nbThread+" et je remplis de la hauteur "+height_min+" à "+height_max);
 	}
 

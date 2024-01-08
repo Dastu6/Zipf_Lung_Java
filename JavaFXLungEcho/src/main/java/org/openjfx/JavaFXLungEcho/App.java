@@ -49,7 +49,7 @@ public class App extends Application {
         return fxmlLoader.load();
     }
     
-    public static void TraitementDicom() throws IOException {
+    public static void TraitementDicom() throws Exception {
     	model.dicomLoader = new DicomLoader("2019010K", 0);
     	model.pretraitement = new TraitementBufferedImage();
     	model.pretraitement.buffImg = model.dicomLoader.dicomImage;
@@ -59,11 +59,7 @@ public class App extends Application {
     	ImageIO.write(model.pretraitement.echographyImg, "PNG", newF );
     	
     	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, true, 3, 3, 
-    			model.pretraitement.array_pente_gauche, model.pretraitement.array_pente_droite, model.pretraitement.array_courbe_haute, 
-    			model.pretraitement.array_courbe_basse_gauche,model.pretraitement.array_courbe_basse_droite,model.pretraitement.booleanZipfMatrix, model.pretraitement.gOmega, 
-    			model.pretraitement.newHeight, model.pretraitement.midWidth, model.pretraitement.z, model.pretraitement.h0, 
-    			model.pretraitement.dOmega, (int)model.pretraitement.prevHGY, (int)model.pretraitement.prevBGY,
-    			model.pretraitement.h2);
+    		model.pretraitement.booleanZipfMatrix);
     	model.traitementZipf.motifMapFromGreyMatrix();
     	//System.out.println("Map de base");
     	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);

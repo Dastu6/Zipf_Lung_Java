@@ -43,5 +43,6 @@ public final class Model {
 	 public int nbThreadTraitement = 15;
 	 final public int nbThreadPosition = 6; //WARNING : NE PAS TOUCHER
 	public String favDir;
+	public boolean isDicomImage = false;
 	
 }

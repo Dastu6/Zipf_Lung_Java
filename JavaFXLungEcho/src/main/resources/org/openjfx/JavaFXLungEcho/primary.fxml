@@ -41,7 +41,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <Label fx:id="labelList" layoutX="557.0" layoutY="90.0" text="Liste des fichiers ouvrables" />
+            <Label fx:id="labelList" alignment="CENTER" contentDisplay="CENTER" layoutX="557.0" layoutY="90.0" text="Liste des fichiers ouvrables" />
             <Button fx:id="changeImage" layoutX="248.0" layoutY="131.0" mnemonicParsing="false" onMouseClicked="#changerImage" text="Changer d'image">
                <cursor>
                   <Cursor fx:constant="HAND" />

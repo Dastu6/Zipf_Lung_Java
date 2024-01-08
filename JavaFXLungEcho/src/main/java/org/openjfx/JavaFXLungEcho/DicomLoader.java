@@ -15,11 +15,11 @@ public class DicomLoader {
 	private File dicomFile;
 	public BufferedImage dicomImage;
 	//Fonction appelée pour charger, sauvegarder une frame d'un fichier Dicom
-	public DicomLoader(String fileName, int frameIndex) throws IOException
+	public DicomLoader(String absolutePath, int frameIndex) throws IOException
 	{
-		dicomFile = new File("src/main/resources/images/dicom/" + fileName + ".dcm");
+		dicomFile = new File(absolutePath);
 		dicomImage = chargeImageDicomBufferise(frameIndex);
-		sauverImage(dicomImage,fileName);
+
 	}
 	
 	public DicomLoader(String dirPath,String fileName) throws IOException
