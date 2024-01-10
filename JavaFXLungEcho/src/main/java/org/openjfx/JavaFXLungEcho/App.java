@@ -61,11 +61,12 @@ public class App extends Application {
     	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, true, 3, 3, 
     		model.pretraitement.booleanZipfMatrix);
     	model.traitementZipf.motifMapFromGreyMatrix();
-    	System.out.println("Map de base");
-    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
+    	//System.out.println("Map de base");
+    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
     	model.traitementZipf.sortMapByOccurence();
-    	System.out.println("Map sorted");
-    	model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
+    	//System.out.println("Map sorted");
+    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
+    	
     }
 
     public static void main(String[] args) throws IOException {
