@@ -1,5 +1,6 @@
 package org.openjfx.JavaFXLungEcho;
 
+import java.awt.Checkbox;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,8 +13,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
@@ -79,7 +83,10 @@ public class PrimaryController {
 
 	private Image currentImage;
 	private Image postImage;
-
+	
+	@FXML
+	private CheckBox darkTheme;
+	
 	@FXML
 	public void initialize() throws IOException { // Méthode appelé pour initialiser cette vue
 		labelList.setDisable(true);
@@ -211,6 +218,7 @@ public class PrimaryController {
 	@FXML
 	void clickOnlistview(MouseEvent event) {
 		String imagename = listview.getSelectionModel().getSelectedItem();
+		Model.getInstance().nomImage = imagename;
 		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
 		putDicomImage(imagePath);
 	}
@@ -443,6 +451,21 @@ public class PrimaryController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	void changeTheme(ActionEvent event) throws IOException {		
+		Scene scene = darkTheme.getScene();
+		//String styleSheetURL = "src/main/resources/org/openjfx/JavaFXLungEcho/dark_theme.css";
+		if (darkTheme.isSelected()) {
+			System.out.println("coche");
+			Parent root = FXMLLoader.load(getClass().getResource("primary.fxml"));
+			root.getStylesheets().add(getClass().getResource("dark_theme.css").toExternalForm());
+			//scene.getStylesheets().clear();
+		}
+		else {
+			//scene.getStylesheets().add(styleSheetURL);
 		}
 	}
 }

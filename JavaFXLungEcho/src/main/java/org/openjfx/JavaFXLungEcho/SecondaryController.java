@@ -145,7 +145,7 @@ public class SecondaryController {
 		 StackPane root = new StackPane();
 		 root.getChildren().add(zipfChart);
         secondStage.setScene(new Scene(root,1280,720));
-        secondStage.setTitle("Loi de zipf appliqué avec un motif "+choicebox.getValue()+" et un seuil de "+spinnerSeuil.getValue());
+        secondStage.setTitle("Loi de Zipf appliqué à l'image "+model.nomImage+" avec un motif "+choicebox.getValue()+" et un seuil de "+spinnerSeuil.getValue());
         secondStage.show();
 		//model.traitementZipf.printMapValuesAndKeys(mapso);
 		System.out.println(choicebox.getValue());
