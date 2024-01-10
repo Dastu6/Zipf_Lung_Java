@@ -36,23 +36,22 @@ public class ThreadTraitementZipf2 implements Runnable {
 
 	@Override
 	public void run() {
-		int number_row = greyMatrix.length;
-		int number_col = greyMatrix[0].length;
-		int max_row_iteration = number_row / motifSizeX; // On va enlever les quelques pixels qui dépassent
-		int max_col_iteration = number_col / motifSizeY; // pour ne pas lire dans de mauvais endroits de la mémoire
+		int width = greyMatrix.length;
+		int length = greyMatrix[0].length;
+		int max_row_iteration = width / motifSizeX; // On va enlever les quelques pixels qui dépassent
+		int max_col_iteration = length / motifSizeY; // pour ne pas lire dans de mauvais endroits de la mémoire
 		int endWidth = (max_row_iteration / maxThread) * (nbThread + 1);
-		int corner_limitX = (motifSizeX - 1) / 2; // On rogne l'image pour être sûr que chaque pixel parcouru puisse
-		int startWidth = (max_row_iteration / maxThread) * nbThread + corner_limitX;
 		// être traité
-		int corner_limitY = (motifSizeY - 1) / 2;
-		for (int i = startWidth; i < endWidth; i++) {
-			for (int j = corner_limitY; j < max_col_iteration; j++) { // Pour chaque pixel on va maintenant regarder son
+		for (int i = 0; i < endWidth; i++) {
+			for (int j = 0; j < max_col_iteration; j++) { // Pour chaque pixel on va maintenant regarder son
 																		// voisinage
 				int[] listMotif = new int[motifSizeX * motifSizeY];
 				int count = 0;
 				boolean check = true;
-				for (int ki = i - corner_limitX; ki <= i + corner_limitX; ki++) {
-					for (int kj = j - corner_limitY; kj <= j + corner_limitY; kj++) {
+				int newI = i*motifSizeX;
+				int newJ = j*motifSizeY;
+				for (int ki = newI ; ki < newI + motifSizeX; ki++) {
+					for (int kj = newJ; kj < newJ + motifSizeY; kj++) {
 						if (zipfOrNot[ki][kj] == false) {
 							check = false;
 							break;
