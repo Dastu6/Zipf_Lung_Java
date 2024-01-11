@@ -93,7 +93,7 @@ public class App extends Application {
     	}
     }
     public static void closeFile() throws IOException {
-    	FileWriter  f = new FileWriter("src/main/resources/favDir.txt");
+    FileWriter  f = new FileWriter("src/main/resources/favDir.txt");
     	if( f!=null ) { 
     		 f.write(Model.getInstance().favDir);
     	      f.close();

@@ -133,7 +133,7 @@ public class SecondaryController {
 			series.getData().add(new XYChart.Data<Number, Number>(i, value));
 			i++;
 		}
-		i=0;/* Pas encore fini, mais c'est pour afficher les motifs on hover sur le graph
+		i=0;// Pas encore fini, mais c'est pour afficher les motifs on hover sur le graph
 		for (Entry<String, Integer> entry : mapso.entrySet()) {
 			Integer value = entry.getValue();
 			String key = entry.getKey();
@@ -144,7 +144,7 @@ public class SecondaryController {
 			          )
 			      );
 			i++;
-		}*/
+		}
 		
 		
 		
