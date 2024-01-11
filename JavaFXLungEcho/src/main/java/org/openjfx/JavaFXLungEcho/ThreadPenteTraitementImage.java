@@ -53,13 +53,20 @@ public class ThreadPenteTraitementImage implements Runnable{
 			pointsPenteGaucheTemp.add(aG0);
 			float prevGX = gOmega;
 			float prevGY = newHeight;
-			for (int x = 1; x < (int) midWidth - gOmega; x++) {
+			for (int x = 1; x < (int) midWidth - gOmega; x++) {				
+				float newGY = prevGY + penteGauche;
+				if ((int)prevGY - (int)newGY >= 2) { //Si entre x et x+1 on passe de y à y+2 alors on ajoute aussi y+1
+					ArrayList<Float> a2 = new ArrayList<Float>(2);
+					a2.add(prevGX + 1);
+					a2.add(prevGY - 1);
+					pointsPenteGaucheTemp.add(a2);
+				}
 				ArrayList<Float> a = new ArrayList<Float>(2);
 				a.add(prevGX + 1);
-				a.add((float) (prevGY + penteGauche));
+				a.add(newGY);
 				pointsPenteGaucheTemp.add(a);
 				prevGX += 1;
-				prevGY = (float) (prevGY + penteGauche);
+				prevGY = newGY;
 			}
 			for (ArrayList<Float> aGTemp : pointsPenteGaucheTemp) {
 				ArrayList<Integer> aG = new ArrayList<Integer>(2);
@@ -80,12 +87,19 @@ public class ThreadPenteTraitementImage implements Runnable{
 			float prevDX = z;
 			float prevDY = h0;
 			for (int x = 1; x < (int) dOmega - z; x++) {
+				float newDY = prevDY + penteDroite;
+				if ((int)newDY - (int)prevDY >= 2) { //Si entre x et x+1 on passe de y à y+2 alors on ajoute aussi y+1
+					ArrayList<Float> a2 = new ArrayList<Float>(2);
+					a2.add(prevDX + 1);
+					a2.add(prevDY + 1);
+					pointsPenteDroiteTemp.add(a2);
+				}
 				ArrayList<Float> a = new ArrayList<Float>(2);
 				a.add(prevDX + 1);
-				a.add((float) (prevDY + penteDroite));
+				a.add(newDY);
 				pointsPenteDroiteTemp.add(a);
 				prevDX += 1;
-				prevDY = (float) (prevDY + penteDroite);
+				prevDY = newDY;
 			}
 			// On va maintenant faire la vraie liste des points où on va recast en int car
 			// pixel : (int x, int y)

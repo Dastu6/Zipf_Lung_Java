@@ -149,7 +149,6 @@ public class TraitementBufferedImage {
 		while (greyPixelsLevels[hOmega][gOmega] != triangle_grey_value) { // On a ici le second triangle
 			gOmega++;
 		}
-
 		// Etape 0 : trouver le milieu de l'image actuelle et descendre jusqu'au premier
 		// pixel de l'image.
 		midWidth = (int) (((oldWidth - 1) - gOmega) / 2);
@@ -169,6 +168,11 @@ public class TraitementBufferedImage {
 		// Etape P : On va calculer les pentes et contours
 		z = dOmega + gOmega - midWidth + 1;
 		int newWidth = dOmega - gOmega + 1;
+		//On va vérifier qu'on est bien sur le trait et pas sur le triangle
+		int recadrage = h2;
+		while(recadrage>0 && greyPixelsLevels[recadrage][gOmega] < seuil_detect_debut) {
+			recadrage--;
+		}
 		newHeight = h2 - h0 + 1;
 		// Courbe du bas droite : ( , ) -> ( , )
 		// Courbe du bas gauche : ( , ) -> ( , )
@@ -253,28 +257,7 @@ public class TraitementBufferedImage {
 			aHD.add((int) aHDY);
 			pointsCourbeHaute.add(aHD);
 		}
-
-		ArrayList<ArrayList<Float>> pointsCourbeBasseGaucheTemp = new ArrayList<ArrayList<Float>>();
-		ArrayList<Float> aBG0 = new ArrayList<Float>(2);
-		aBG0.add((float) gOmega);
-		aBG0.add((float) newHeight);
-		pointsCourbeBasseGaucheTemp.add(aBG0);
-		float prevBGX = gOmega;
-		prevBGY = newHeight;
-		while (prevBGX < midWidth) {
-			ArrayList<Float> a = new ArrayList<Float>(2);
-			int countX = 1;
-			int countY = 0;
-			while (greyPixelsLevels[(int) prevBGY + countY][(int) prevBGX + countX] > seuil_detect_debut) {
-				countY++;
-			}
-			a.add(prevBGX + countX);
-			a.add(prevBGY + countY);
-			pointsCourbeBasseGaucheTemp.add(a);
-			prevBGX += countX;
-			prevBGY += countY;
-		}
-
+		
 		ArrayList<ArrayList<Float>> pointsCourbeBasseDroiteTemp = new ArrayList<ArrayList<Float>>();
 		ArrayList<Float> aBD0 = new ArrayList<Float>(2);
 		aBD0.add((float) dOmega);
@@ -297,15 +280,27 @@ public class TraitementBufferedImage {
 			prevBDY += countY;
 		}
 
-		ArrayList<ArrayList<Integer>> pointsCourbeBasseGauche = new ArrayList<ArrayList<Integer>>();
-		for (ArrayList<Float> aBGTemp : pointsCourbeBasseGaucheTemp) {
-			ArrayList<Integer> aBG = new ArrayList<Integer>(2);
-			float aBGX = aBGTemp.get(0);
-			float aBGY = aBGTemp.get(1);
-			aBG.add((int) aBGX);
-			aBG.add((int) aBGY);
-			pointsCourbeBasseGauche.add(aBG);
+		ArrayList<ArrayList<Float>> pointsCourbeBasseGaucheTemp = new ArrayList<ArrayList<Float>>();
+		ArrayList<Float> aBG0 = new ArrayList<Float>(2);
+		aBG0.add((float) gOmega);
+		aBG0.add((float) newHeight);
+		pointsCourbeBasseGaucheTemp.add(aBG0);
+		float prevBGX = gOmega;
+		prevBGY = newHeight;
+		while (prevBGX < midWidth) {
+			ArrayList<Float> a = new ArrayList<Float>(2);
+			int countX = 1;
+			int countY = 0;
+			while (greyPixelsLevels[(int) prevBGY + countY][(int) prevBGX + countX] > seuil_detect_debut) {
+				countY++;
+			}
+			a.add(prevBGX + countX);
+			a.add(prevBGY + countY);
+			pointsCourbeBasseGaucheTemp.add(a);
+			prevBGX += countX;
+			prevBGY += countY;
 		}
+
 		ArrayList<ArrayList<Integer>> pointsCourbeBasseDroite = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Float> aBDTemp : pointsCourbeBasseDroiteTemp) {
 			ArrayList<Integer> aBD = new ArrayList<Integer>(2);
@@ -314,6 +309,15 @@ public class TraitementBufferedImage {
 			aBD.add((int) aBDX);
 			aBD.add((int) aBDY);
 			pointsCourbeBasseDroite.add(aBD);
+		}
+		ArrayList<ArrayList<Integer>> pointsCourbeBasseGauche = new ArrayList<ArrayList<Integer>>();
+		for (ArrayList<Float> aBGTemp : pointsCourbeBasseGaucheTemp) {
+			ArrayList<Integer> aBG = new ArrayList<Integer>(2);
+			float aBGX = aBGTemp.get(0);
+			float aBGY = aBGTemp.get(1);
+			aBG.add((int) aBGX);
+			aBG.add((int) aBGY);
+			pointsCourbeBasseGauche.add(aBG);
 		}
 		
 		PenteBufferedImage pentegauche = new PenteBufferedImage(pointsPenteGauche,gOmega,h0);
