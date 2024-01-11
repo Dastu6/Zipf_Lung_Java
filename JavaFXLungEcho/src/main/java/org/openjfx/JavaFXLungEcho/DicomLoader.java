@@ -29,7 +29,6 @@ public class DicomLoader {
 	}
 	public DicomLoader(String dirPath,String fileName, int frameIndex) throws IOException
 	{
-		
 		dicomFile = new File(dirPath +"\\"+ fileName );
 		dicomImage = chargeImageDicomBufferise(frameIndex);
 		sauverImage(dicomImage,fileName);
