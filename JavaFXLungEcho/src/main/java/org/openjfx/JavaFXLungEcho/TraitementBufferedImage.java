@@ -173,7 +173,7 @@ public class TraitementBufferedImage {
 		while(recadrage>0 && greyPixelsLevels[recadrage][gOmega] < seuil_detect_debut) {
 			recadrage--;
 		}
-		newHeight = h2 - h0 + 1;
+		newHeight = recadrage - h0 + 1;
 		// Courbe du bas droite : ( , ) -> ( , )
 		// Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega, newHeight, midWidth, h0); // On part du point le plus à gauche
