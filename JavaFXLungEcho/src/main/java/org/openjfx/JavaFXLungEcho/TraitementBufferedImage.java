@@ -1,8 +1,6 @@
 package org.openjfx.JavaFXLungEcho;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
 public class TraitementBufferedImage {
 	public BufferedImage buffImg;
 	public int[][] greyPixelsLevels;
@@ -27,11 +25,8 @@ public class TraitementBufferedImage {
 	public float prevHGY;
 	public float prevBGY;
 	public int h2;
-
 	public TraitementBufferedImage() {
-
 	}
-
 	// Fonction qui va permettre de stocker la matrice de pixels d'une des frames de
 	// l'image dicom
 	// à la différence de l'autre celle-ci parallélise le calcul via des thread
@@ -39,7 +34,6 @@ public class TraitementBufferedImage {
 		int widthImg = bufferImg.getWidth();
 		int heightImg = bufferImg.getHeight();
 		if (isDicom) {
-
 			greyPixelsLevels = new int[heightImg][widthImg];
 			int nbThread = Model.getInstance().nbThreadTraitement;
 			for (int i = 0; i < nbThread; i++) {
@@ -51,7 +45,6 @@ public class TraitementBufferedImage {
 			greyMatrixOnlySonogram = greyPixelsLevels;
 		}
 	}
-
 	// Fonction qui va permettre de stocker la matrice de pixels d'une des frames de
 	// l'image dicom
 	public void BufferedImageToPixelMatrix(BufferedImage bufferImg) {
@@ -74,7 +67,6 @@ public class TraitementBufferedImage {
 		}
 		minimumGreyIntensityBeforeTreatment = min;
 	}
-
 	// Fonction qui va regarder si un pixel d'une matrice possède un pixel non nul
 	// au dessus de lui
 	public boolean pixelHasBlackPixelAbove(int[][] matrix, int x, int y) throws IllegalArgumentException {
@@ -90,7 +82,6 @@ public class TraitementBufferedImage {
 		// }
 		return false;
 	}
-
 	public boolean pixelHasBlackPixelBelow(int[][] matrix, int x, int y) throws IllegalArgumentException {
 		if (y < 1 || x < 0) {
 			throw new IllegalArgumentException("Trying to check for a pixel that doesn't exist");
@@ -100,7 +91,6 @@ public class TraitementBufferedImage {
 		}
 		return false;
 	}
-
 	// Fonction qui va calculer la pente entre (x1,y1) et (x2,y2)
 	public float slope(int x1, int y1, int x2, int y2) throws IllegalArgumentException {
 		if (x2 == x1) {
@@ -109,11 +99,8 @@ public class TraitementBufferedImage {
 		float p = (float) (y2 - y1) / (float) (x2 - x1);
 		return p;
 	}
-
 	public void ThreadBufferedImageToSonogram() {
-
 	}
-
 	// Fonction qui va créer un nouveau fichier PNG pour ne garder que la zone de
 	// l'échographie
 	// Cette fonction améliore également le contraste de l'échographie
@@ -133,7 +120,6 @@ public class TraitementBufferedImage {
 		int hOmega = 0;
 		int triangle_grey_value = 0;
 		// Suppression de la bande blanche si elle existe
-
 		// Ici on trouve le triangle de droite : 1er point jusqu'au dernier
 		// (anciennement étape 4)
 		for (int i = 0; i < oldHeight; i++) {
@@ -153,13 +139,11 @@ public class TraitementBufferedImage {
 		// pixel de l'image.
 		midWidth = (int) (((oldWidth - 1) - gOmega) / 2);
 		h0 = 0;
-
 		while (greyPixelsLevels[h0][midWidth] <= seuil_detect_debut && h0 < oldHeight) { // La boucle s'arrête lorsqu'on
 																							// trouve un pixel non noir
 																							// (donc un point de l'écho)
 			h0++;
 		}
-
 		// Etape 2 : Trouver le point le plus bas de l'échographie
 		h2 = oldHeight - 1;
 		while (greyPixelsLevels[h2][midWidth] < seuil_detect_debut) { // On part du bas et on remonte
@@ -173,30 +157,24 @@ public class TraitementBufferedImage {
 		while(recadrage>0 && greyPixelsLevels[recadrage][gOmega] < seuil_detect_debut) {
 			recadrage--;
 		}
-		newHeight = recadrage - h0 + 1;
+		newHeight = h2 - h0 + 1;
 		// Courbe du bas droite : ( , ) -> ( , )
 		// Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega, newHeight, midWidth, h0); // On part du point le plus à gauche
 		float penteDroite = slope(z, h0, dOmega, newHeight); // On part du point le plus à gauche
-
 		///////////////// PENTES///////////////////////::
-
 		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
-
 		ThreadPenteTraitementImage gauche = new ThreadPenteTraitementImage(true, pointsPenteGauche, (float) gOmega,
 				midWidth, (float) newHeight, penteGauche);
 		ThreadPenteTraitementImage droite = new ThreadPenteTraitementImage(false, pointsPenteDroite, (float) h0, dOmega,
 				(float) z, penteDroite);
 		gauche.run();
-
 		droite.run();
-
 		/////////////////// COURBES///////////////////////////////
 		// On va calculer la courbe haute de la zone de l'échographie : d'abord partie
 		/////////////////// gauche puis droite
 		ArrayList<ArrayList<Float>> pointsCourbeHauteGaucheTemp = new ArrayList<ArrayList<Float>>();
-
 		ArrayList<Float> aHG0 = new ArrayList<Float>(2); // Point gauche pente haute
 		aHG0.add((float) midWidth);
 		aHG0.add((float) h0);
@@ -239,7 +217,6 @@ public class TraitementBufferedImage {
 			prevHDX -= countX;
 			prevHDY += countY;
 		}
-
 		ArrayList<ArrayList<Integer>> pointsCourbeHaute = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Float> aHGTemp : pointsCourbeHauteGaucheTemp) {
 			ArrayList<Integer> aHG = new ArrayList<Integer>(2);
@@ -279,7 +256,6 @@ public class TraitementBufferedImage {
 			prevBDX -= countX;
 			prevBDY += countY;
 		}
-
 		ArrayList<ArrayList<Float>> pointsCourbeBasseGaucheTemp = new ArrayList<ArrayList<Float>>();
 		ArrayList<Float> aBG0 = new ArrayList<Float>(2);
 		aBG0.add((float) gOmega);
@@ -300,7 +276,6 @@ public class TraitementBufferedImage {
 			prevBGX += countX;
 			prevBGY += countY;
 		}
-
 		ArrayList<ArrayList<Integer>> pointsCourbeBasseDroite = new ArrayList<ArrayList<Integer>>();
 		for (ArrayList<Float> aBDTemp : pointsCourbeBasseDroiteTemp) {
 			ArrayList<Integer> aBD = new ArrayList<Integer>(2);
@@ -326,15 +301,12 @@ public class TraitementBufferedImage {
 		PenteBufferedImage courbehaute = new PenteBufferedImage(pointsCourbeHaute,gOmega,h0);
 		PenteBufferedImage courbebassedroite = new PenteBufferedImage(pointsCourbeBasseDroite,gOmega,h0);
 		PenteBufferedImage courbebassegauche = new PenteBufferedImage(pointsCourbeBasseGauche,gOmega,h0);
-
 	
-
 		// Etape 6 : calcul de la nouvelle image
 		greyMatrixOnlySonogram = new int[newHeight][newWidth];
 		booleanZipfMatrix = new boolean[newHeight][newWidth]; // Matrice qui va sauvegarder si le point doit être traité
 																// par Zipf
 		echographyImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-
 		int nbThreadTraitement = Model.getInstance().nbThreadTraitement;
 		for (int i = 0; i < nbThreadTraitement; i++) {
 			ThreadSonoTraitementImage temp = new ThreadSonoTraitementImage(nbThreadTraitement, i, echographyImg,
@@ -363,13 +335,10 @@ public class TraitementBufferedImage {
 			}	 */
 		
 		
-
 		long endTime = System.nanoTime();
-
 		// obtenir la différence entre les deux valeurs de temps nano
 		long timeElapsed = endTime - startTime;
 		long milliTimeElapsed = timeElapsed / 1000000;
-
 		System.out.println("Execution time in milliseconds: " + milliTimeElapsed);
 	}
 }
