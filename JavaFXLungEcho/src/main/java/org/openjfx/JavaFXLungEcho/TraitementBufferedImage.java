@@ -283,10 +283,10 @@ public class TraitementBufferedImage {
 		ArrayList<ArrayList<Float>> pointsCourbeBasseGaucheTemp = new ArrayList<ArrayList<Float>>();
 		ArrayList<Float> aBG0 = new ArrayList<Float>(2);
 		aBG0.add((float) gOmega);
-		aBG0.add((float) newHeight);
+		aBG0.add((float) recadrage);
 		pointsCourbeBasseGaucheTemp.add(aBG0);
 		float prevBGX = gOmega;
-		prevBGY = newHeight;
+		prevBGY = recadrage;
 		while (prevBGX < midWidth) {
 			ArrayList<Float> a = new ArrayList<Float>(2);
 			int countX = 1;
