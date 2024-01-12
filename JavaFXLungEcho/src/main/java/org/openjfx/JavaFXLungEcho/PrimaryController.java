@@ -85,9 +85,6 @@ public class PrimaryController {
 	private Image postImage;
 	
 	@FXML
-	private CheckBox darkTheme;
-	
-	@FXML
 	public void initialize() throws IOException { // Méthode appelé pour initialiser cette vue
 		labelList.setDisable(true);
 		labelList.setVisible(false);
@@ -451,21 +448,6 @@ public class PrimaryController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-	
-	@FXML
-	void changeTheme(ActionEvent event) throws IOException {		
-		Scene scene = darkTheme.getScene();
-		//String styleSheetURL = "src/main/resources/org/openjfx/JavaFXLungEcho/dark_theme.css";
-		if (darkTheme.isSelected()) {
-			System.out.println("coche");
-			Parent root = FXMLLoader.load(getClass().getResource("primary.fxml"));
-			root.getStylesheets().add(getClass().getResource("dark_theme.css").toExternalForm());
-			//scene.getStylesheets().clear();
-		}
-		else {
-			//scene.getStylesheets().add(styleSheetURL);
 		}
 	}
 }
