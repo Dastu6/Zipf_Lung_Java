@@ -105,7 +105,6 @@ public class SecondaryController {
 		Model model = Model.getInstance();
 		// zipfChart.au
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
-		XYChart.Data<Number, Number> datas = new XYChart.Data<Number, Number>();
 		int[] motifs = parseChoiceMotif();
 		// les méthodes ne vont pas être les mêmes si on a une image dicom
 		// model.traitementZipf = new
@@ -114,7 +113,7 @@ public class SecondaryController {
 
 		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, spinnerSeuil.getValue(),
 				true, false, motifs[0], motifs[1], model.pretraitement.booleanZipfMatrix);
-		//model.traitementZipf.printGreyMatrix();
+		// model.traitementZipf.printGreyMatrix();
 
 		model.traitementZipf.newTech();
 
@@ -133,21 +132,8 @@ public class SecondaryController {
 			series.getData().add(new XYChart.Data<Number, Number>(i, value));
 			i++;
 		}
-		i=0;/* Pas encore fini, mais c'est pour afficher les motifs on hover sur le graph
-		for (Entry<String, Integer> entry : mapso.entrySet()) {
-			Integer value = entry.getValue();
-			String key = entry.getKey();
-			 XYChart.Data<Number, Number> data = series.getData().get(i);
-			data.setNode(
-			          new HoveredThresholdNode(
-			        		  key, value, motifs[0],motifs[1]
-			          )
-			      );
-			i++;
-		}*/
-		
-		
-		
+		i = 0;
+
 		// model.traitementZipf.printbooleanZipf();
 		System.out.println("Maxvalue " + maxvalue + " Max range : " + (maxrange - 1));
 		int index = 0;
@@ -164,8 +150,20 @@ public class SecondaryController {
 		}
 		LineChart<Number, Number> zipfChart = new LineChart<Number, Number>(new LogarithmicAxis(1, xmaxvalue),
 				new LogarithmicAxis(1, ymaxvalue));
+		String basedText = "Aucun motif sélectionné";
+		for (int i1 = 0; i1 <= motifs[1]; i1++) {
+			basedText += "\n";
+		}
+		zipfChart.setTitle(basedText);
+		for (Entry<String, Integer> entry : mapso.entrySet()) {
+			Integer value = entry.getValue();
+			String key = entry.getKey();
+			XYChart.Data<Number, Number> data = series.getData().get(i);
+			data.setNode(new HoveredThresholdNode(key, value, motifs[0], motifs[1], zipfChart, basedText));
+			i++;
+		}
 		zipfChart.getData().add(series);
-		
+
 		zipfChart.setCursor(Cursor.CROSSHAIR);
 		Stage secondStage = new Stage();
 		StackPane root = new StackPane();
@@ -207,74 +205,56 @@ public class SecondaryController {
 		return new ImageView(wr).getImage();
 	}
 
-	/**
-	 * @return plotted y values for monotonically increasing integer x values,
-	 *         starting from x=1
-	 */
-	public ObservableList<XYChart.Data<Integer, Integer>> plot(int... y) {
-		final ObservableList<XYChart.Data<Integer, Integer>> dataset = FXCollections.observableArrayList();
-		int i = 0;
-		while (i < y.length) {
-			final XYChart.Data<Integer, Integer> data = new XYChart.Data<>(i + 1, y[i]);
-			//data.setNode(new HoveredThresholdNode((i == 0) ? 0 : y[i - 1], y[i]));
-
-			dataset.add(data);
-			i++;
-		}
-
-		return dataset;
-	}
-
 	/** a node which displays a value on hover, but is otherwise empty */
 	class HoveredThresholdNode extends StackPane {
 		int motifSizeX;
 		int motifSizeY;
-		HoveredThresholdNode(String motif, int value, int motifsizeX,int motifsizeY) {
-			setPrefSize(10,10);
+		String showValue;
+		String basedTitle;
+		LineChart<Number, Number> refChart;
+
+		HoveredThresholdNode(String motif, int value, int motifsizeX, int motifsizeY, LineChart<Number, Number> chart,
+				String title) {
+			setPrefSize(10, 10);
 			this.motifSizeX = motifsizeX;
 			this.motifSizeY = motifsizeY;
-			final Label label = createDataThresholdLabel(motif, value);
+			refChart = chart;
+			basedTitle = title;
+			createDataThresholdLabel(motif, value);
 
 			setOnMouseEntered(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent mouseEvent) {
-					getChildren().setAll(label);
-					setCursor(Cursor.NONE);
-					toFront();
+					refChart.setTitle(showValue);
 				}
 			});
 			setOnMouseExited(new EventHandler<MouseEvent>() {
 				@Override
 				public void handle(MouseEvent mouseEvent) {
-					getChildren().clear();
-					setCursor(Cursor.CROSSHAIR);
+					refChart.setTitle(basedTitle);
 				}
 			});
 		}
 
-		private Label createDataThresholdLabel(String motif, int value) {
-			String result ="";
+		private void createDataThresholdLabel(String motif, int value) {
+			String result = "Motif : ";
 			int count = 0;
-			for(int i=0;i<motifSizeX;i++)
-			{
-				result = result+"[";
-				for(int j= 0;j<motifSizeY;j++)
-				{ 
-					result+=motif.charAt(count);
+			for (int i = 0; i < motifSizeY; i++) {
+				result = result + "[ ";
+				for (int j = 0; j < motifSizeX; j++) {
+					result += motif.charAt(count);
 					count++;
-					if(j!=motifSizeY-1)
-						result+=" ";
+					if (j != motifSizeX - 1)
+						result += " ";
 				}
-				result+="]\n";
+				if (i != motifSizeY - 1)
+					result += " ]\n           ";
+				else {
+					result += " ]\n";
+				}
 			}
-			String finalResult = result + "\n"+value;
-			Label label = new Label(finalResult);
-			label.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
-			label.setStyle("-fx-font-size: 20; -fx-font-weight: bold;");
+			showValue = result + "Nombres d'occurences : " + value;
 
-			label.setTextFill(Color.FIREBRICK);
-			label.setMinSize(5, 5);
-			return label;
 		}
 	}
 
