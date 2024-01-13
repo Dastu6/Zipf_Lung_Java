@@ -18,7 +18,7 @@
       <ChoiceBox fx:id="choiceboxRecouvrement" prefWidth="150.0" />
       <Label text="Seuil pour le calcul des motifs" />
       <Spinner fx:id="spinnerSeuil" prefHeight="25.0" prefWidth="78.0" />
-      <ImageView fx:id="imageViewer" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imageViewer" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#imageClicked" pickOnBounds="true" preserveRatio="true" />
         <Button fx:id="secondaryButton" onMouseClicked="#launchZipf" text="Lancer le traitement pour la loi de Zipf" />
       <Button fx:id="backToImageSelectionButton" mnemonicParsing="false" onMouseClicked="#goToPreviousScene" text="Retourner à la sélection de l'image" />
     </children>
