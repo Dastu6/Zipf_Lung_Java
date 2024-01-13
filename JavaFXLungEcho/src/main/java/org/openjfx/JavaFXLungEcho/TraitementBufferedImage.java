@@ -322,16 +322,7 @@ public class TraitementBufferedImage {
 						 (th, booleanZipfMatrix,pentegauche,pentedroite,courbehaute,courbebassegauche,courbebassedroite,
 								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
 				 temp.run();
-			}	 
-		 
-		 /*for(int th = 0; th < nbThreadPosition; th++)
-			{
-				ThreadSonoBooleanMatrix temp = new ThreadSonoBooleanMatrix
-						 (th, booleanZipfMatrix,tempgauche,array_pente_droite,array_courbe_haute,array_courbe_basse_gauche,array_courbe_basse_droite,
-								 gOmega,newHeight,midWidth,h0,z,dOmega,(int)prevHGY,(int)prevBGY, h2);
-				 temp.run();
-			}	 */
-		
+			}		
 		
 		long endTime = System.nanoTime();
 		// obtenir la différence entre les deux valeurs de temps nano
