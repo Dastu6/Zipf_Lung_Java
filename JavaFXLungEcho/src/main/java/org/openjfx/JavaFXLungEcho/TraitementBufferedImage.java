@@ -116,7 +116,6 @@ public class TraitementBufferedImage {
 		// dès qu'un écart va être plus petit ou bien qu'une barre a une épaisseur plus
 		// élevée (cas où le triangle se superpose)
 		// on a trouvé le triangle
-		int hOmega_diff = 0;
 		int hOmega = 0;
 		int triangle_grey_value = 0;
 		// Suppression de la bande blanche si elle existe
@@ -127,7 +126,6 @@ public class TraitementBufferedImage {
 					&& greyPixelsLevels[i + 1][oldWidth - 1] >= seuil_detect_debut) {
 				triangle_grey_value = greyPixelsLevels[i][oldWidth - 1];
 				hOmega = i;
-				hOmega_diff++;
 			}
 		}
 		dOmega = oldWidth - 1;
