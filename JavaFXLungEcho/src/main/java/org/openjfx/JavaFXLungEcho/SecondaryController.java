@@ -62,9 +62,12 @@ public class SecondaryController {
 	@FXML
 	private Spinner<Integer> spinnerSeuil;
 
+	private Image currentImage;
+
 	@FXML
 	public void initialize() {
-		imageViewer.setImage(convertToFxImage(Model.getInstance().pretraitement.echographyImg));
+		currentImage = convertToFxImage(Model.getInstance().pretraitement.echographyImg);
+		imageViewer.setImage(currentImage);
 		choicebox.setValue("3x3");
 		choicebox.setItems(motifList);
 		choiceboxRecouvrement.setVisible(false);
@@ -106,10 +109,6 @@ public class SecondaryController {
 		// zipfChart.au
 		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();
 		int[] motifs = parseChoiceMotif();
-		// les méthodes ne vont pas être les mêmes si on a une image dicom
-		// model.traitementZipf = new
-		// TraitementZipf(model.pretraitement.greyMatrixOnlySonogram,
-		// spinnerSeuil.getValue(), true, false, motifs[0], motifs[1]);
 
 		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, spinnerSeuil.getValue(),
 				true, false, motifs[0], motifs[1], model.pretraitement.booleanZipfMatrix);
@@ -133,7 +132,7 @@ public class SecondaryController {
 			i++;
 		}
 		i = 0;
-
+		System.out.println(series.getData().size() + "size of datas");
 		// model.traitementZipf.printbooleanZipf();
 		System.out.println("Maxvalue " + maxvalue + " Max range : " + (maxrange - 1));
 		int index = 0;
@@ -162,15 +161,17 @@ public class SecondaryController {
 			data.setNode(new HoveredThresholdNode(key, value, motifs[0], motifs[1], zipfChart, basedText));
 			i++;
 		}
+		System.out.println(series.getData().size() + "size of datas");
 		zipfChart.getData().add(series);
 
 		zipfChart.setCursor(Cursor.CROSSHAIR);
 		Stage secondStage = new Stage();
 		StackPane root = new StackPane();
 		root.getChildren().add(zipfChart);
+		secondStage.getIcons().add(new Image("file:src\\main\\resources\\lung.png"));
 		secondStage.setScene(new Scene(root, 1280, 720));
-		secondStage.setTitle("Loi de zipf appliqué avec un motif " + choicebox.getValue() + " et un seuil de "
-				+ spinnerSeuil.getValue());
+		secondStage.setTitle("Loi de zipf appliqué à " + model.nomImage + " avec un motif " + choicebox.getValue()
+				+ " et un seuil de " + spinnerSeuil.getValue());
 		secondStage.show();
 		// model.traitementZipf.printMapValuesAndKeys(mapso);
 		System.out.println(choicebox.getValue());
@@ -190,6 +191,22 @@ public class SecondaryController {
 	}
 
 	// Fonction pour convertir une bufferedImage en Image JavaFX
+
+	@FXML // Action lorsque l'on clique sur l'image
+	void imageClicked(MouseEvent event) {
+		Stage stage = new Stage();
+		StackPane root = new StackPane();
+		ImageView image = new ImageView(currentImage);
+		root.getChildren().add(image);
+		Scene scene = new Scene(root);
+		stage.getIcons().add(new Image("file:src\\main\\resources\\lung.png"));
+		stage.setWidth(currentImage.getWidth());
+		stage.setHeight(currentImage.getHeight());
+		stage.setScene(scene);
+		stage.setResizable(true);
+		stage.setTitle("Image à analyser");
+		stage.show();
+	}
 
 	private Image convertToFxImage(BufferedImage image) {
 		WritableImage wr = null;

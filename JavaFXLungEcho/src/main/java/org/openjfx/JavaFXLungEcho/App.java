@@ -12,6 +12,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 
@@ -26,6 +27,8 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 1280, 720);
+        stage.setTitle("Traitement d'image avec la loi de Zipf");
+        stage.getIcons().add(new Image("file:src\\main\\resources\\lung.png"));
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

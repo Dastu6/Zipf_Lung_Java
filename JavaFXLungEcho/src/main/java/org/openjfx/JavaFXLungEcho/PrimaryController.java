@@ -83,7 +83,7 @@ public class PrimaryController {
 
 	private Image currentImage;
 	private Image postImage;
-	
+
 	@FXML
 	public void initialize() throws IOException { // Méthode appelé pour initialiser cette vue
 		labelList.setDisable(true);
@@ -166,7 +166,7 @@ public class PrimaryController {
 	void switchImage(MouseEvent event) throws IOException {
 		App.setRoot("secondary");
 		Model.getInstance().photoNumber = (int) sliderImage.getValue();
-		Model.getInstance().isDicomImage=true;
+		Model.getInstance().isDicomImage = true;
 	}
 
 	@FXML
@@ -213,22 +213,26 @@ public class PrimaryController {
 	// Affiche l'image correspondant au fichier sélectionner par l'utilisateur dans
 	// la listview
 	@FXML
-	void clickOnlistview(MouseEvent event) {
+	void clickOnlistview(MouseEvent event) throws IOException {
 		String imagename = listview.getSelectionModel().getSelectedItem();
 		Model.getInstance().nomImage = imagename;
 		String imagePath = selectedDirectory.getAbsolutePath() + "\\" + imagename;
-		putDicomImage(imagePath);
+		File f = new File(imagePath);
+		putImage(f);
 	}
 
 	@FXML // Action lorsque l'on clique sur l'image de prétraitement
 	void imageClicked(MouseEvent event) {
 		Stage stage = new Stage();
 		StackPane root = new StackPane();
-		ImageView temp = new ImageView(currentImage);
-		root.getChildren().add(temp);
-		Scene scene = new Scene(root, 1280, 720);
+		ImageView image = new ImageView(currentImage);
+		root.getChildren().add(image);
+		Scene scene = new Scene(root);
+		stage.getIcons().add(new Image("file:src\\main\\resources\\lung.png"));
+		stage.setWidth(currentImage.getWidth());
+		stage.setHeight(currentImage.getHeight());
 		stage.setScene(scene);
-		stage.setResizable(false);
+		stage.setResizable(true);
 		stage.setTitle("Image en prétraitement");
 		stage.show();
 	}
@@ -239,19 +243,22 @@ public class PrimaryController {
 		StackPane root = new StackPane();
 		ImageView temp = new ImageView(postImage);
 		root.getChildren().add(temp);
-
-		stage.setScene(new Scene(root, 1280, 720));
-		stage.setTitle("Image posttraitement");
+		Scene scene = new Scene(root);
+		stage.getIcons().add(new Image("file:src\\main\\resources\\lung.png"));
+		stage.setWidth(postImage.getWidth() + 50);
+		stage.setHeight(postImage.getHeight() + 50);
+		stage.setScene(scene);
+		stage.setTitle("Image post-traitement");
 		stage.show();
 	}
 
 	// Fais le prétraitement sur l'image et l'affiche
 	@FXML
 	void cutImage(MouseEvent event) throws Exception {
-		Model.getInstance().isDicomImage=true;
+		Model.getInstance().isDicomImage = true;
 		Model.getInstance().pretraitement.buffImg = Model.getInstance().dicomLoader.dicomImage;
-		Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix
-		(Model.getInstance().isDicomImage,Model.getInstance().pretraitement.buffImg);
+		Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(Model.getInstance().isDicomImage,
+				Model.getInstance().pretraitement.buffImg);
 		Model.getInstance().pretraitement.BufferedImageToSonogram();
 		imageContainer1.setVisible(true);
 		imageContainer1.setDisable(false);
@@ -272,17 +279,7 @@ public class PrimaryController {
 		if (f != null)
 			fileChooser.setInitialDirectory(f);
 		File fc = fileChooser.showOpenDialog((Stage) changeImage.getScene().getWindow());
-		if (fc != null) {
-
-			if (getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dcm")
-					|| getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dicom")) {
-				putDicomImage(fc.getAbsolutePath());
-			} else {// On a une image en .png ou .jpg
-				Model.getInstance().pretraitement.echographyImg = ImageIO.read(fc);
-				Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(false, Model.getInstance().pretraitement.echographyImg );
-				App.setRoot("secondary");
-			}
-		}
+		putImage(fc);
 	}
 
 	private Optional<String> getExtensionByStringHandling(String filename) {
@@ -345,12 +342,14 @@ public class PrimaryController {
 			for (File file : selectedDirectory.listFiles()) {
 				if (!file.isDirectory()) {
 					if (!getExtensionByStringHandling(file.getAbsolutePath()).isPresent()) {
-						System.out.println(file.getAbsolutePath());
-						p.add(file.getName());
+						// System.out.println(file.getAbsolutePath());
+						// p.add(file.getName());
 					}
 
 					else if (getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dcm")
-							|| getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dicom")) {
+							|| getExtensionByStringHandling(file.getAbsolutePath()).get().equals("dicom")
+							|| getExtensionByStringHandling(file.getAbsolutePath()).get().equals("png")
+							|| getExtensionByStringHandling(file.getAbsolutePath()).get().equals("jpg")) {
 						System.out.println(
 								"Extension de fichier : " + getExtensionByStringHandling(file.getAbsolutePath()).get());
 						System.out.println(file.getAbsolutePath());
@@ -358,8 +357,7 @@ public class PrimaryController {
 					}
 				}
 			}
-			if (listview.getSelectionModel().getSelectedItems().isEmpty() == false)
-				listview.getItems().clear();
+			listview.getItems().clear();
 			listview.getItems().addAll(p);
 			listview.setVisible(true);
 			listview.setDisable(false);
@@ -448,6 +446,25 @@ public class PrimaryController {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+
+	// Méthode qui recoit un fichier en entrée et selon son type s'occupe de la
+	// suite
+	void putImage(File fc) throws IOException {
+		if (fc != null) {
+
+			if (getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dcm")
+					|| getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("dicom")) {
+				putDicomImage(fc.getAbsolutePath());
+			} else if (getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("png")
+					|| getExtensionByStringHandling(fc.getAbsolutePath()).get().equals("jpg")) {// On a une image en
+																								// .png ou .jpg
+				Model.getInstance().pretraitement.echographyImg = ImageIO.read(fc);
+				Model.getInstance().pretraitement.ThreadBuffImagetoPixelMatrix(false,
+						Model.getInstance().pretraitement.echographyImg);
+				App.setRoot("secondary");
+			}
 		}
 	}
 }
