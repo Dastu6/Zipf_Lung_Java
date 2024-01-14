@@ -314,7 +314,7 @@ public class TraitementZipf {
 	 * Motif thread map from grey matrix.
 	 */
 	//Sur toutes les images, pour les images .dcm avec des contours particuliers il faudra utiliser une autre méthode
-	public void motifThreadMapFromGreyMatrix() {
+	/*public void motifThreadMapFromGreyMatrix() {
 		int maxThread = Model.getInstance().nbThreadTraitement;
 		for(int i=0;i<maxThread;i++)
 		{
@@ -324,13 +324,13 @@ public class TraitementZipf {
 			temp.run();
 		}
 		
-	}
+	}*/
 	
 	/**
 	 * Motif thread map from grey matrix dicom.
 	 */
 	//Dicom's version
-	public void motifThreadMapFromGreyMatrixDicom() {
+	/*public void motifThreadMapFromGreyMatrixDicom() {
 		int maxThread = Model.getInstance().nbThreadTraitement;
 		for(int i=0;i<maxThread;i++)
 		{
@@ -340,7 +340,7 @@ public class TraitementZipf {
 			temp.run();
 		}
 		printMapValuesAndKeys(mapMotifNombreOccurence);
-	}
+	}*/
 	
 	
 	/**

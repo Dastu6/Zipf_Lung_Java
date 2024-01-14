@@ -17,13 +17,24 @@ import javafx.stage.Stage;
 
 
 
+// TODO: Auto-generated Javadoc
 /**
- * JavaFX App
+ * JavaFX App.
  */
 public class App extends Application {
+    
+    /** The scene. */
     private static Scene scene;
+    
+    /** The model. */
     private static Model model;
     
+    /**
+     * Start.
+     *
+     * @param stage the stage
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 1280, 720);
@@ -43,16 +54,34 @@ public class App extends Application {
         });
     }
 
+    /**
+     * Sets the root.
+     *
+     * @param fxml the new root
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
+    /**
+     * Load FXML.
+     *
+     * @param fxml the fxml
+     * @return the parent
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
     
-    public static void TraitementDicom() throws Exception {
+    /**
+     * Traitement dicom.
+     *
+     * @throws Exception the exception
+     */
+    /*public static void TraitementDicom() throws Exception {
     	model.dicomLoader = new DicomLoader("2019010K", 0);
     	model.pretraitement = new TraitementBufferedImage();
     	model.pretraitement.buffImg = model.dicomLoader.dicomImage;
@@ -70,8 +99,14 @@ public class App extends Application {
     	//System.out.println("Map sorted");
     	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
     	
-    }
+    }*/
 
+    /**
+     * The main method.
+     *
+     * @param args the arguments
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static void main(String[] args) throws IOException {
     	model = Model.getInstance();
 
@@ -82,6 +117,11 @@ public class App extends Application {
         launch();
     }
     
+    /**
+     * Open file.
+     *
+     * @throws FileNotFoundException the file not found exception
+     */
     public static void openFile() throws FileNotFoundException {
     	File f = new File("src/main/resources/favDir.txt");
     	if(f.exists() && !f.isDirectory()) { 
@@ -95,6 +135,12 @@ public class App extends Application {
     	      Model.getInstance().favDir = data;
     	}
     }
+    
+    /**
+     * Close file.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static void closeFile() throws IOException {
     FileWriter  f = new FileWriter("src/main/resources/favDir.txt");
     	if( f!=null ) { 

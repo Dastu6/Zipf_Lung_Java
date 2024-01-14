@@ -1,35 +1,85 @@
 package org.openjfx.JavaFXLungEcho;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+// TODO: Auto-generated Javadoc
+
+/**
+ * The Class TraitementBufferedImage.
+ */
 public class TraitementBufferedImage {
+	
+	/** The buff img. */
 	public BufferedImage buffImg;
+	
+	/** The grey pixels levels. */
 	public int[][] greyPixelsLevels;
+	
+	/** The minimum grey intensity before treatment. */
 	public int minimumGreyIntensityBeforeTreatment;
-	public int seuil_detect_debut; // Car ce n'est pas forcément la valeur min on peut passer de 2 à 4 mais il n'y
-									// a pas d'info echo
+	
+	/** The seuil detect debut. */
+	public int seuil_detect_debut;
+									
+	/** The seuil detect fin. */
 	public int seuil_detect_fin;
+	
+	/** The grey matrix only sonogram. */
 	public int[][] greyMatrixOnlySonogram;
+	
+	/** The boolean zipf matrix. Will be used during the Zipf process to only use the sonogram pixels on the crop image */
 	public boolean[][] booleanZipfMatrix;
+	
+	/** The echography image. */
 	public BufferedImage echographyImg;
+	
+	/** The array pente gauche. */
 	public int[] array_pente_gauche;
+	
+	/** The array pente droite. */
 	public int[] array_pente_droite;
+	
+	/** The array courbe haute. */
 	public int[] array_courbe_haute;
+	
+	/** The array courbe basse gauche. */
 	public int[] array_courbe_basse_gauche;
+	
+	/** The array courbe basse droite. */
 	public int[] array_courbe_basse_droite;
+	
+	/** The g omega. */
 	public int gOmega;
+	
+	/** The new height. */
 	public int newHeight;
+	
+	/** The mid width. */
 	public int midWidth;
+	
+	/** The z. */
 	public int z;
+	
+	/** The h 0. */
 	public int h0;
+	
+	/** The d omega. */
 	public int dOmega;
+	
+	/** The prev HGY. */
 	public float prevHGY;
+	
+	/** The prev BGY. */
 	public float prevBGY;
+	
+	/** The h 2. */
 	public int h2;
-	public TraitementBufferedImage() {
-	}
-	// Fonction qui va permettre de stocker la matrice de pixels d'une des frames de
-	// l'image dicom
-	// à la différence de l'autre celle-ci parallélise le calcul via des thread
+	
+	/**
+	 * Thread buff imageto pixel matrix.
+	 * This will store the pixel matrix from the selected frame of the dicom image but by using threads if possible
+	 * @param isDicom the is dicom
+	 * @param bufferImg the buffer img
+	 */
 	public void ThreadBuffImagetoPixelMatrix(boolean isDicom, BufferedImage bufferImg) {
 		int widthImg = bufferImg.getWidth();
 		int heightImg = bufferImg.getHeight();
@@ -45,8 +95,11 @@ public class TraitementBufferedImage {
 			greyMatrixOnlySonogram = greyPixelsLevels;
 		}
 	}
-	// Fonction qui va permettre de stocker la matrice de pixels d'une des frames de
-	// l'image dicom
+	/**
+	 * Buffered image to pixel matrix.
+	 * This will store the pixel matrix from the selected frame of the dicom image
+	 * @param bufferImg the buffer img
+	 */
 	public void BufferedImageToPixelMatrix(BufferedImage bufferImg) {
 		int widthImg = bufferImg.getWidth();
 		int heightImg = bufferImg.getHeight();
@@ -67,21 +120,35 @@ public class TraitementBufferedImage {
 		}
 		minimumGreyIntensityBeforeTreatment = min;
 	}
-	// Fonction qui va regarder si un pixel d'une matrice possède un pixel non nul
-	// au dessus de lui
+	/**
+	 * Pixel has black pixel above.
+	 * Will check if a pixel from the given matrix has a direct full black pixel above it
+	 * @param matrix the matrix
+	 * @param x the x
+	 * @param y the y
+	 * @return true, if successful
+	 * @throws IllegalArgumentException the illegal argument exception
+	 */
 	public boolean pixelHasBlackPixelAbove(int[][] matrix, int x, int y) throws IllegalArgumentException {
 		int row = y;
 		if (row < 1 || x < 0) {
 			throw new IllegalArgumentException("Trying to check for a pixel that doesn't exist");
 		}
-		// while (row > 1) {
 		if (matrix[row - 1][x] <= seuil_detect_debut) {
 			return true;
 		}
-		// row--;
-		// }
 		return false;
 	}
+	
+	/**
+	 * Pixel has black pixel below.
+	 * Will check if a pixel from the given matrix has a direct full black pixel below it
+	 * @param matrix the matrix
+	 * @param x the x
+	 * @param y the y
+	 * @return true, if successful
+	 * @throws IllegalArgumentException the illegal argument exception
+	 */
 	public boolean pixelHasBlackPixelBelow(int[][] matrix, int x, int y) throws IllegalArgumentException {
 		if (y < 1 || x < 0) {
 			throw new IllegalArgumentException("Trying to check for a pixel that doesn't exist");
@@ -91,7 +158,17 @@ public class TraitementBufferedImage {
 		}
 		return false;
 	}
-	// Fonction qui va calculer la pente entre (x1,y1) et (x2,y2)
+	
+	/**
+	 * Slope.
+	 * Given the 2 points (x1,y1) and (x2,y2), this will return the slope factor between them
+	 * @param x1 the first point X value
+	 * @param y1 the first point Y value
+	 * @param x2 the second point X value
+	 * @param y2 the second point Y value
+	 * @return the float
+	 * @throws IllegalArgumentException the illegal argument exception
+	 */
 	public float slope(int x1, int y1, int x2, int y2) throws IllegalArgumentException {
 		if (x2 == x1) {
 			throw new IllegalArgumentException("Slope method can't take similar X values");
@@ -99,11 +176,13 @@ public class TraitementBufferedImage {
 		float p = (float) (y2 - y1) / (float) (x2 - x1);
 		return p;
 	}
-	public void ThreadBufferedImageToSonogram() {
-	}
-	// Fonction qui va créer un nouveau fichier PNG pour ne garder que la zone de
-	// l'échographie
-	// Cette fonction améliore également le contraste de l'échographie
+	/**
+	 * Buffered image to sonogram.
+	 * This will create a new PNG file which would be a crop image of the dicom one, with its edges fitting
+	 * the sonogram area.
+	 * This method also enhance the contrast of the sonogram without losing information.
+	 * @throws Exception the exception
+	 */
 	public void BufferedImageToSonogram() throws Exception {
 		long startTime = System.nanoTime();
 		seuil_detect_debut = 10;
@@ -160,7 +239,7 @@ public class TraitementBufferedImage {
 		// Courbe du bas gauche : ( , ) -> ( , )
 		float penteGauche = slope(gOmega, newHeight, midWidth, h0); // On part du point le plus à gauche
 		float penteDroite = slope(z, h0, dOmega, newHeight); // On part du point le plus à gauche
-		///////////////// PENTES///////////////////////::
+		///////////////// PENTES ///////////////////////::
 		ArrayList<ArrayList<Integer>> pointsPenteGauche = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> pointsPenteDroite = new ArrayList<ArrayList<Integer>>();
 		ThreadPenteTraitementImage gauche = new ThreadPenteTraitementImage(true, pointsPenteGauche, (float) gOmega,
