@@ -306,43 +306,6 @@ public class TraitementZipf {
 		System.out.println("Max x : "+max_x+" and max y : "+max_y);
 	}
 	
-	
-	
-	//Fonction qui réalise les motifs nécessaire pour la loi de zipf et qui remplit la hashmap
-	// cette fonction utilise des threads et réalise sur toutes l'images. C'est donc appliquable
-	/**
-	 * Motif thread map from grey matrix.
-	 */
-	//Sur toutes les images, pour les images .dcm avec des contours particuliers il faudra utiliser une autre méthode
-	/*public void motifThreadMapFromGreyMatrix() {
-		int maxThread = Model.getInstance().nbThreadTraitement;
-		for(int i=0;i<maxThread;i++)
-		{
-			ThreadTraitementZipf temp = new ThreadTraitementZipf
-					(maxThread, i, seuilPixelDifferenceDetection,
-							specificOrientation, greyMatrix, motifSizeX, motifSizeY, mapMotifNombreOccurence);
-			temp.run();
-		}
-		
-	}*/
-	
-	/**
-	 * Motif thread map from grey matrix dicom.
-	 */
-	//Dicom's version
-	/*public void motifThreadMapFromGreyMatrixDicom() {
-		int maxThread = Model.getInstance().nbThreadTraitement;
-		for(int i=0;i<maxThread;i++)
-		{
-			ThreadTraitementZipf2 temp = new ThreadTraitementZipf2
-					(maxThread, i, seuilPixelDifferenceDetection,
-							specificOrientation, greyMatrix, motifSizeX, motifSizeY, mapMotifNombreOccurence,ZipfOrNot);
-			temp.run();
-		}
-		printMapValuesAndKeys(mapMotifNombreOccurence);
-	}*/
-	
-	
 	/**
 	 * Printboolean zipf.
 	 */
