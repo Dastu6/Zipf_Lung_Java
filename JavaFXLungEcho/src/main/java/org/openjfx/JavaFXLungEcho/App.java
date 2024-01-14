@@ -15,8 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-
-
 // TODO: Auto-generated Javadoc
 /**
  * JavaFX App.
@@ -75,31 +73,6 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
-    
-    /**
-     * Traitement dicom.
-     *
-     * @throws Exception the exception
-     */
-    /*public static void TraitementDicom() throws Exception {
-    	model.dicomLoader = new DicomLoader("2019010K", 0);
-    	model.pretraitement = new TraitementBufferedImage();
-    	model.pretraitement.buffImg = model.dicomLoader.dicomImage;
-    	model.pretraitement.BufferedImageToPixelMatrix(model.pretraitement.buffImg);
-    	model.pretraitement.BufferedImageToSonogram();
-    	File newF = new File("src/main/resources/images/saved_or_converted/test_echo.png");
-    	ImageIO.write(model.pretraitement.echographyImg, "PNG", newF );
-    	
-    	model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, 0, true, true, 3, 3, 
-    		model.pretraitement.booleanZipfMatrix);
-    	model.traitementZipf.motifMapFromGreyMatrix();
-    	//System.out.println("Map de base");
-    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapMotifNombreOccurence);
-    	model.traitementZipf.sortMapByOccurence();
-    	//System.out.println("Map sorted");
-    	//model.traitementZipf.printMapValuesAndKeys(model.traitementZipf.mapSortedCodedMotifOccurence);
-    	
-    }*/
 
     /**
      * The main method.
