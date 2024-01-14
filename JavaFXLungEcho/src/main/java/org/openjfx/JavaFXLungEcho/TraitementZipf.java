@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 // TODO: Auto-generated Javadoc
 /**
  * Cette classe est capable d'effectuer un traitement d'une loi de zipf appliqué à une image,
- * elle fonctionne grâce à des motifs
+ * elle fonctionne grâce à des motifs.
  */
 public class TraitementZipf {
 	
@@ -56,7 +56,7 @@ public class TraitementZipf {
 	 * Instantiates a new traitement zipf.
 	 *
 	 * @param matrix the matrix
-	 * @param seuil the seuil
+	 * @param seuil the threshold
 	 * @param specifOrientation the specif orientation
 	 * @param orderSortingMap the order sorting map
 	 * @param motifX the motif X
@@ -81,28 +81,26 @@ public class TraitementZipf {
 	}
 
 	/**
-	 * Convert number base to base.
+	 * Convert number from base to a new base.
 	 *
 	 * @param number the number
 	 * @param base the base
 	 * @param new_base the new base
-	 * @return the int
+	 * @return the converted int number
 	 */
-	// Permet de convertir un nombre d'une base vers une autre base
 	public static int convertNumberBaseToBase(int number, int base, int new_base) {
 		return Integer.parseInt(Integer.toString(Integer.parseInt(String.valueOf(number), base), new_base));
 	}
 
 	/**
 	 * Code motif.
-	 *
-	 * @param motif the motif
-	 * @return the array list
+	 * This code a pattern
+	 * @param motif the pattern
+	 * @return the array list of the coded pattern
 	 */
 	public ArrayList<Integer> codeMotif(int[] motif) {
 		int len = motif.length;
 		ArrayList<Integer> Stock = new ArrayList<>(); // On stocke toutes les valeurs du motif
-		// Nouvelle méthode
 		for (int i = 0; i < len; i++) {
 			ArrayList<Integer> Seuils = new ArrayList<>(); // On va stocker l'ensemble [motif-seuil; motif+seuil]
 			int ensemble_seuil_bas = motif[i] - seuilPixelDifferenceDetection; // On vérifie c'est ensemble soit bien
@@ -132,11 +130,9 @@ public class TraitementZipf {
 				index = Stock.indexOf(Stock.stream().min(Comparator.comparingInt(k -> Math.abs(k - seeked)))
 						.orElseThrow(() -> new NoSuchElementException("Pas de valeur dans le motif")));
 			}
-			//System.out.println(index);
 			Coded.add(index); // On ajoute dans le motif coded l'indice du rang de motif plus ou moins (qui
 								// est dans stock)
 		}
-		//System.out.println(Coded);
 		if (!specificOrientation) { // Soit on veut avoir l'orientation des motifs soit on s'en moque
 			Collections.sort(Coded);
 		}
@@ -145,9 +141,9 @@ public class TraitementZipf {
 
 	/**
 	 * Coded motif to string.
-	 *
-	 * @param motif the motif
-	 * @return the string
+	 * Will transform our pattern to use it as a String for other methods.
+	 * @param motif the ArrayList containing the coded pattern
+	 * @return the string of the coded pattern
 	 */
 	public String codedMotifToString(ArrayList<Integer> motif) {
 		String StrMotif = "";
@@ -161,20 +157,9 @@ public class TraitementZipf {
 	/**
 	 * Prints the map values and keys.
 	 *
-	 * @param map the map
+	 * @param map a HashMap<String, Integer>
 	 */
 	public void printMapValuesAndKeys(HashMap<String, Integer> map) {
-		System.out.println(map.keySet());
-		System.out.println(map.values());
-	}
-
-	/**
-	 * Prints the map values and keys.
-	 *
-	 * @param map the map
-	 */
-	public void printMapValuesAndKeys(ConcurrentHashMap<String, Integer> map) {
-		System.out.println("Eh ho");
 		System.out.println(map.keySet());
 		System.out.println(map.values());
 	}
@@ -193,66 +178,10 @@ public class TraitementZipf {
 		mapSortedCodedMotifOccurence = sortedMapStream.collect(
 				Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (intK, intV) -> intK, LinkedHashMap::new));
 	}
-
 	
 	/**
-	 * Motif map from grey matrix.
-	 */
-	public void motifMapFromGreyMatrix() {
-		int number_row = greyMatrix.length;
-		int number_col = greyMatrix[0].length;
-		int max_row_iteration = number_row / motifSizeX; // On va enlever les quelques pixels qui dépassent
-		int max_col_iteration = number_col / motifSizeY; // pour ne pas lire dans de mauvais endroits de la mémoire
-		int corner_limitX = (motifSizeX - 1) / 2; // On rogne l'image pour être sûr que chaque pixel parcouru puisse
-		int max_x = 0;							// être traité
-		int max_y=0;
-		int corner_limitY = (motifSizeY - 1) / 2;
-		System.out.println("row : "+max_row_iteration+" col : "+max_col_iteration);
-		// mais qui ne recouvrent pas entièrement l'image
-		for (int i = corner_limitX; i < max_row_iteration; i++) {
-			for (int j = corner_limitY; j < max_col_iteration; j++) { // Pour chaque pixel on va maintenant regarder son
-																		// voisinage
-				
-				int[] listMotif = new int[motifSizeX * motifSizeY];
-				int count = 0;
-				boolean check = true;
-				for (int ki = i - corner_limitX; ki <= i + corner_limitX; ki++) {
-					for (int kj = j - corner_limitY; kj <= j + corner_limitY; kj++) {
-						if (ZipfOrNot[ki][kj] == false) {
-							check = false;
-							break;
-						}
-						
-						listMotif[count] = greyMatrix[ki][kj];
-						count++;
-						if(max_y<kj)
-							max_y=kj;
-					}
-					if (check == false)
-						break;
-					if(max_x<ki)
-						max_x=ki;
-				}
-				if (check != false) {
-					ArrayList<Integer> codedMotif = codeMotif(listMotif);
-					String strCodedMotif = codedMotifToString(codedMotif);
-					if (mapMotifNombreOccurence.containsKey(strCodedMotif)) { // Si le motif est déjà présent dans notre
-																				// image
-						int old_value = mapMotifNombreOccurence.get(strCodedMotif); // Alors on augmente son nombre
-																					// d'occurence de 1
-						mapMotifNombreOccurence.replace(strCodedMotif, old_value + 1);
-					} else {
-						mapMotifNombreOccurence.put(strCodedMotif, 1);
-					}
-				}
-			}
-		}
-		System.out.println("Max x : "+max_x+" and max y : "+max_y);
-	}
-	
-	/**
-	 * fonction qui code les motifs selon le seuil, et la valeur des motifs passé par le constructeur
-	 * plus tôt.(la fonction codeMotif ne fonctionne pas correctement)
+	 * newTech
+	 * Method that will code the patterns regarding the threshold & patterns values from constructor
 	 */
 	public void newTech() {
 		int max_x = 0;							
@@ -325,6 +254,9 @@ public class TraitementZipf {
 	}
 	
 	
+	/**
+	 * Prints the grey matrix.
+	 */
 	public void printGreyMatrix() {
 		for(int i=0;i<greyMatrix.length;i++)
 		{
@@ -346,13 +278,10 @@ public class TraitementZipf {
 		ZipfOrNot = new boolean[greyMatrix.length][greyMatrix[0].length];
 		for(int i=0; i<ZipfOrNot.length; i++)
 		{
-			   for(int j=0; j<ZipfOrNot[i].length; j++)
-			   {
-				   ZipfOrNot[i][j] = true;
-			   }
-			   
-		}
-			  
+		   for(int j=0; j<ZipfOrNot[i].length; j++)
+		   {
+			   ZipfOrNot[i][j] = true;
+		   }	   
+		}		  
 	}
-	
 }
