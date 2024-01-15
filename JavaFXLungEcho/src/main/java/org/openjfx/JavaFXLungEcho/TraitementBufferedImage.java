@@ -97,7 +97,7 @@ public class TraitementBufferedImage {
 	}
 	/**
 	 * Buffered image to pixel matrix.
-	 * This will store the pixel matrix from the selected frame of the dicom image
+	 * This will store the grey pixel matrix from the selected frame of the dicom image (or a classic image)
 	 * @param bufferImg the buffer img
 	 */
 	public void BufferedImageToPixelMatrix(BufferedImage bufferImg) {
@@ -108,7 +108,7 @@ public class TraitementBufferedImage {
 		for (int i = 0; i < heightImg; i++) {
 			for (int j = 0; j < widthImg; j++) {
 				int col = bufferImg.getRGB(j, i);
-				int red = col & 0xff0000 >> 16;
+				int red = col & 0xff0000 >> 16;  //Utilise un masque pour lire le canal rouge et on va ensuite décaler de 16 bits vers la droite pour ensuite lire le vert
 				int green = col & 0xff00 >> 8;
 				int blue = col & 0xff;
 				// Utilisation de la norme rec 709
