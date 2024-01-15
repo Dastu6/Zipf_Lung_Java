@@ -81,14 +81,13 @@ public class TraitementZipf {
 	}
 
 	/**
-	 * Convert number base to base.
+	 * Permet de convertir un nombre d'une base vers une autre base
 	 *
 	 * @param number the number
 	 * @param base the base
 	 * @param new_base the new base
-	 * @return the int
+	 * @return the parameter convert in the new base
 	 */
-	// Permet de convertir un nombre d'une base vers une autre base
 	public static int convertNumberBaseToBase(int number, int base, int new_base) {
 		return Integer.parseInt(Integer.toString(Integer.parseInt(String.valueOf(number), base), new_base));
 	}
@@ -303,7 +302,7 @@ public class TraitementZipf {
 				}
 			}
 		}
-		System.out.println("Max x : "+max_x+" and max y : "+max_y);
+		//System.out.println("Max x : "+max_x+" and max y : "+max_y);
 	}
 	
 	/**
