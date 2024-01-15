@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 C:\Users\scizz\git\Zipf_Lung_Java\JavaFXLungEcho\src\main\resources\images\dicom
+=======
+C:\Users\antoi\git\Zipf_Lung_Java\JavaFXLungEcho\src\main\resources\images\dicom
+>>>>>>> branch 'main' of https://github.com/Dastu6/Zipf_Lung_Java

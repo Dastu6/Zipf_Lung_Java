@@ -1,9 +1,5 @@
 package org.openjfx.JavaFXLungEcho;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-
 /**
  * 
  * @author Antoine Delenclos Cette classe correspond à un thread qui permet de
@@ -112,7 +108,6 @@ public class ThreadSonoBooleanMatrix implements Runnable {
 				int x = j;
 				int y = i;
 				switch (nThread) {
-//int[] = { 0,0,0,1,0,2,0,3}
 
 				case 0: // Partie supérieur gauche : pente gauche
 					// Pour chaque point : chercher si le point de la pente est avant ou après (sur
@@ -159,8 +154,6 @@ public class ThreadSonoBooleanMatrix implements Runnable {
 				}
 			}
 		}
-		// System.out.println("Je suis le thread numero "+nbThread+" et je remplis de la
-		// hauteur "+height_min+" à "+height_max);
 	}
 
 }
