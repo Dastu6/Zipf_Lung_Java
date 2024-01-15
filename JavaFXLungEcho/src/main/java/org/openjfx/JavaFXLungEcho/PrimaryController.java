@@ -413,6 +413,7 @@ public class PrimaryController {
 			selectFileButton.setDisable(true);
 			labelList.setVisible(false);
 			labelSlider.setText("/" + maxImage);
+			labelSlider.setVisible(true);
 			this.sliderImage.valueProperty().addListener(new ChangeListener<Number>() {
 
 				@Override
