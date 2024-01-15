@@ -69,7 +69,6 @@ public class DicomLoader {
 	public void sauverImage(BufferedImage image, String nomImage) throws IOException
 	{
 	File nomfichier = new File("src/main/resources/images/saved_or_converted/" + nomImage + ".png");// ou jpg
-	//image = ;
 	ImageIO.write(removeAlphaChannel(image), "PNG", nomfichier);//ou JPG
 	}
 	
@@ -80,7 +79,6 @@ public class DicomLoader {
 
 	    BufferedImage target = createImage(img.getWidth(), img.getHeight(), false);
 	    Graphics2D g = target.createGraphics();
-	    // g.setColor(new Color(color, false));
 	    g.fillRect(0, 0, img.getWidth(), img.getHeight());
 	    g.drawImage(img, 0, 0, null);
 	    g.dispose();
