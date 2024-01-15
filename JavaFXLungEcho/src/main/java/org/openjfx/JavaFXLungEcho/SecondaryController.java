@@ -270,7 +270,7 @@ model.traitementZipf.printGreyMatrix();
 					result += " ]\n";
 				}
 			}
-			showValue = result + "Nombres d'occurences : " + value;
+			showValue = result + "Nombre d'occurences : " + value;
 
 		}
 	}
