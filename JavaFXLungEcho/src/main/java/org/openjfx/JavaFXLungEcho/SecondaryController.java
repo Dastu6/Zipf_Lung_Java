@@ -113,7 +113,7 @@ public class SecondaryController {
 		model.traitementZipf = new TraitementZipf(model.pretraitement.greyMatrixOnlySonogram, spinnerSeuil.getValue(),
 				true, false, motifs[0], motifs[1], model.pretraitement.booleanZipfMatrix);
 		// model.traitementZipf.printGreyMatrix();
-
+model.traitementZipf.printGreyMatrix();
 		model.traitementZipf.newTech();
 
 		model.traitementZipf.sortMapByOccurence();

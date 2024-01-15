@@ -15,11 +15,11 @@
    <children>
       <Pane prefHeight="714.0" prefWidth="1240.0">
          <children>
-            <ImageView fx:id="imageContainer1" fitHeight="228.0" fitWidth="369.0" layoutX="734.0" layoutY="206.0" onMouseClicked="#imageClicked2" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imageContainer1" fitHeight="217.0" fitWidth="369.0" layoutX="734.0" layoutY="217.0" onMouseClicked="#imageClicked2" pickOnBounds="true" preserveRatio="true">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ImageView>
-            <ImageView fx:id="imageContainer" fitHeight="179.0" fitWidth="402.0" layoutX="218.0" layoutY="230.0" onMouseClicked="#imageClicked" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imageContainer" fitHeight="217.0" fitWidth="379.0" layoutX="218.0" layoutY="192.0" onMouseClicked="#imageClicked" pickOnBounds="true" preserveRatio="true">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ImageView>
