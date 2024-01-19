@@ -11,9 +11,26 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
 import org.dcm4che3.imageio.plugins.dcm.*;
+// TODO: Auto-generated Javadoc
+
+/**
+ * Classe chargée de charger des images dicom et ressortir une bufferedImage
+ */
 public class DicomLoader {
+	
+	/** The dicom file. */
 	private File dicomFile;
+	
+	/** The dicom image. */
 	public BufferedImage dicomImage;
+	
+	/**
+	 * Instantiates a new dicom loader.
+	 *
+	 * @param absolutePath the absolute path of the File
+	 * @param frameIndex the frame index of the dicom Image
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	//Fonction appelée pour charger, sauvegarder une frame d'un fichier Dicom
 	public DicomLoader(String absolutePath, int frameIndex) throws IOException
 	{
@@ -22,11 +39,27 @@ public class DicomLoader {
 
 	}
 	
+	/**
+	 * Instantiates a new dicom loader.
+	 *
+	 * @param dirPath the dir path
+	 * @param fileName the file name
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public DicomLoader(String dirPath,String fileName) throws IOException
 	{
 		
 		dicomFile = new File(dirPath +"\\"+ fileName );
 	}
+	
+	/**
+	 * Instantiates a new dicom loader.
+	 *
+	 * @param dirPath the dir path
+	 * @param fileName the file name
+	 * @param frameIndex the frame index
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public DicomLoader(String dirPath,String fileName, int frameIndex) throws IOException
 	{
 		dicomFile = new File(dirPath +"\\"+ fileName );
@@ -35,11 +68,20 @@ public class DicomLoader {
 	}
 	
 	
+	/**
+	 * Instantiates a new dicom loader.
+	 */
 	public DicomLoader()
 	{
 		
 	}
 	
+	/**
+	 * Gets the nb images.
+	 *
+	 * @return the nb images
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	int getNbImages() throws IOException
 	{
 		Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
@@ -51,6 +93,13 @@ public class DicomLoader {
 		return readers.getNumImages(true);
 	}
 	
+	/**
+	 * Charge image dicom bufferise.
+	 *
+	 * @param value the value
+	 * @return the buffered image
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public BufferedImage chargeImageDicomBufferise(int value) throws IOException { //Value = frame du fichier dicom
 		 Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
 		 ImageReader readers = iter.next();//on se déplace dans l'image dicom
@@ -66,12 +115,25 @@ public class DicomLoader {
 		 return image;
 	}
 	
+	/**
+	 * Sauvegarde l'image au format png dans le chemin passé en paramètre
+	 *
+	 * @param image the image
+	 * @param nomImage Le chemin vers la nouvelle image
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public void sauverImage(BufferedImage image, String nomImage) throws IOException
 	{
 	File nomfichier = new File("src/main/resources/images/saved_or_converted/" + nomImage + ".png");// ou jpg
 	ImageIO.write(removeAlphaChannel(image), "PNG", nomfichier);//ou JPG
 	}
 	
+	/**
+	 * Removes the alpha channel.
+	 *
+	 * @param img the img
+	 * @return the buffered image
+	 */
 	private  BufferedImage removeAlphaChannel(BufferedImage img) {
 	    if (!img.getColorModel().hasAlpha()) {
 	        return img;
@@ -85,6 +147,15 @@ public class DicomLoader {
 
 	    return target;
 	}
+	
+	/**
+	 * Creates the image.
+	 *
+	 * @param width the width
+	 * @param height the height
+	 * @param hasAlpha the has alpha
+	 * @return the buffered image
+	 */
 	private  BufferedImage createImage(int width, int height, boolean hasAlpha) {
 	    return new BufferedImage(width, height, hasAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
 	}

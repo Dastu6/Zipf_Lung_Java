@@ -3,19 +3,52 @@ package org.openjfx.JavaFXLungEcho;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
+// TODO: Auto-generated Javadoc
+/**
+ * This class represent a thread that fill the slope of the image (left and right)
+ */
 public class ThreadPenteTraitementImage implements Runnable{
 
+	/** The type. */
 	private boolean type;// Selon le type on gère pente gauche ou pente droite
+	
+	/** The pente. */
 	private ArrayList<ArrayList<Integer>> pente;
+	
+	/** The g omega. */
 	private float gOmega;
+	
+	/** The new height. */
 	private float newHeight;
+	
+	/** The mid width. */
 	private int midWidth;
+	
+	/** The pente gauche. */
 	private float penteGauche;
+	
+	/** The h 0. */
 	private float h0;
+	
+	/** The z. */
 	private float z;
+	
+	/** The d omega. */
 	private int dOmega;
+	
+	/** The pente droite. */
 	private float penteDroite;
 
+	/**
+	 * Instantiates a new thread pente traitement image.
+	 *
+	 * @param type the type
+	 * @param pentee the pentee
+	 * @param gOmega the g omega
+	 * @param midWidth the mid width
+	 * @param newHeight the new height
+	 * @param penteGauche the pente gauche
+	 */
 	// Constructeur pente gauche
 	public ThreadPenteTraitementImage(boolean type ,ArrayList<ArrayList<Integer>> pentee,float gOmega, int midWidth, float newHeight, float penteGauche) {
 		super();
@@ -42,6 +75,9 @@ public class ThreadPenteTraitementImage implements Runnable{
 
 
 
+	/**
+	 * Run.
+	 */
 	@Override
 	public void run() {
 		if (type == true) {
