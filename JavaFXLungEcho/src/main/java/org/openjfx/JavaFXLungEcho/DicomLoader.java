@@ -51,7 +51,7 @@ public class DicomLoader {
 		return readers.getNumImages(true);
 	}
 	
-	public BufferedImage chargeImageDicomBufferise(int value) throws IOException {
+	public BufferedImage chargeImageDicomBufferise(int value) throws IOException { //Value = frame du fichier dicom
 		 Iterator<ImageReader> iter = ImageIO.getImageReadersByFormatName("DICOM");//spécifie l'image
 		 ImageReader readers = iter.next();//on se déplace dans l'image dicom
 		DicomImageReadParam param1 = (DicomImageReadParam) readers.getDefaultReadParam();//return DicomImageReadParam
@@ -64,7 +64,7 @@ public class DicomLoader {
 		 //Essayez de l'enlever pour que ça lag moinsx
 		 readers.dispose();//Releases all of the native sreen resources used by this Window, itssubcomponents, and all of its owned children
 		 return image;
-		 }
+	}
 	
 	public void sauverImage(BufferedImage image, String nomImage) throws IOException
 	{
